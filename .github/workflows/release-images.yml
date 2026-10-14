@@ -1,0 +1,48 @@
+name: release-images
+
+# Publica as imagens multi-arch no GHCR ao criar uma tag vX.Y.Z. A atualização das empresas na
+# VPS continua manual (atualizar-empresa.sh --tag X.Y.Z), uma empresa por vez.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  imagens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Versão e dono (minúsculo)
+        id: v
+        run: |
+          echo "tag=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          echo "dono=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+      - name: API (amd64 + arm64)
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          file: deploy/images/api.Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ steps.v.outputs.dono }}/sistema-pdv-api:${{ steps.v.outputs.tag }}
+      - name: Web (amd64 + arm64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy/images/web.Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ steps.v.outputs.dono }}/sistema-pdv-web:${{ steps.v.outputs.tag }}

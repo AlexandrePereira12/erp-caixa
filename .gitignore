@@ -1,0 +1,27 @@
+# segredos e dados de empresa
+.env
+.env.*
+!.env.example
+empresas/
+backups/
+*.dump
+*.sha256
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# node
+node_modules/
+frontend/dist/
+frontend/playwright-report/
+frontend/test-results/
+
+# gerados em deploy
+deploy/nginx/networks.generated.yml
+
+frontend/e2e/*.png

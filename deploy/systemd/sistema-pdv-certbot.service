@@ -1,0 +1,9 @@
+[Unit]
+Description=Renovação dos certificados TLS (sistema-pdv)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+Environment=PDV_ROOT=__RAIZ__
+ExecStart=__RAIZ__/bin/renovar-certificados.sh

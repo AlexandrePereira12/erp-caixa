@@ -1,0 +1,250 @@
+@import "tailwindcss";
+@import "@fontsource-variable/figtree/wght.css";
+@import "@fontsource-variable/fraunces/soft.css";
+@import "@fontsource/courier-prime/latin-400.css";
+@import "@fontsource/courier-prime/latin-700.css";
+
+/*
+ * Identidade: cozinha de casa. Fundo de papel cremoso, tinta marrom-escura, verde-folha nas ações,
+ * amarelo-gema como marca-texto e terracota para "mesa em uso". Títulos e valores grandes em
+ * Fraunces (serifada macia, com jeito de cardápio); o resto em Figtree. Courier Prime só no recibo.
+ *
+ * Os componentes usam só os nomes semânticos (bg-surface, text-muted...). O tema vem de
+ * `data-theme` no <html> ("light" | "dark"; ausente = segue o sistema) e é trocado em lib/theme.ts.
+ * Pares de cor conferidos para contraste AA (texto 4,5:1; bordas de controle e foco 3:1).
+ */
+@theme inline {
+  --font-sans: "Figtree Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
+  --font-mono: "Courier Prime", ui-monospace, Menlo, Consolas, monospace;
+
+  --color-page: var(--c-page);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-fg: var(--c-fg);
+  --color-muted: var(--c-muted);
+  --color-brand: var(--c-brand);
+  --color-brand-hover: var(--c-brand-hover);
+  --color-on-brand: var(--c-on-brand);
+  --color-brand-text: var(--c-brand-text);
+  --color-brand-soft: var(--c-brand-soft);
+  --color-accent: var(--c-accent);
+  --color-on-accent: var(--c-on-accent);
+  --color-terra: var(--c-terra);
+  --color-terra-text: var(--c-terra-text);
+  --color-terra-soft: var(--c-terra-soft);
+  --color-danger: var(--c-danger);
+  --color-danger-hover: var(--c-danger-hover);
+  --color-danger-text: var(--c-danger-text);
+  --color-danger-soft: var(--c-danger-soft);
+  --color-success-text: var(--c-success-text);
+  --color-success-soft: var(--c-success-soft);
+  --color-warning-text: var(--c-warning-text);
+  --color-warning-soft: var(--c-warning-soft);
+  --color-ring: var(--c-ring);
+  --color-side: var(--c-side);
+  --color-side-fg: var(--c-side-fg);
+  --color-side-muted: var(--c-side-muted);
+  --color-side-line: var(--c-side-line);
+  --color-side-active: var(--c-side-active);
+}
+
+/* Cantos macios e sombras quentes: ficha de balcão, não painel de laboratório. */
+@theme {
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 9px;
+  --radius-lg: 13px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+
+  --shadow-xs: 0 1px 1px rgb(70 45 10 / 0.06);
+  --shadow-sm: 0 1px 2px rgb(70 45 10 / 0.08), 0 1px 1px rgb(70 45 10 / 0.04);
+  --shadow-md: 0 6px 16px -6px rgb(70 45 10 / 0.2), 0 1px 2px rgb(70 45 10 / 0.08);
+  --shadow-lg: 0 14px 30px -12px rgb(70 45 10 / 0.3);
+  --shadow-xl: 0 28px 56px -20px rgb(70 45 10 / 0.42);
+}
+
+:root {
+  color-scheme: light;
+
+  --c-page: #f6f1e7;
+  --c-surface: #fffdf8;
+  --c-surface-2: #efe8d9;
+  --c-line: #e2d9c5;
+  --c-line-strong: #8c8068;
+  --c-fg: #2a2318;
+  --c-muted: #685d4a;
+  --c-brand: #2a7a4b;
+  --c-brand-hover: #1f6039;
+  --c-on-brand: #fffdf8;
+  --c-brand-text: #1d6a3e;
+  --c-brand-soft: #e0f0e3;
+  --c-accent: #f2b32e;
+  --c-on-accent: #2a2318;
+  --c-terra: #c4532f;
+  --c-terra-text: #a63d21;
+  --c-terra-soft: #fbe4da;
+  --c-danger: #b3261e;
+  --c-danger-hover: #8c1d17;
+  --c-danger-text: #a3221a;
+  --c-danger-soft: #fbe8e4;
+  --c-success-text: #2c6b2f;
+  --c-success-soft: #e3f1d9;
+  --c-warning-text: #7a4a00;
+  --c-warning-soft: #fdf0c8;
+  --c-ring: #1d6a3e;
+
+  --c-side: #17352a;
+  --c-side-fg: #f3ecdc;
+  --c-side-muted: #b3c6b9;
+  --c-side-line: #264a3b;
+  --c-side-active: #21493a;
+}
+
+/* Tema escuro: escolhido à mão (data-theme="dark") ou, sem escolha, pelo sistema. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --c-page: #17140f;
+  --c-surface: #201c16;
+  --c-surface-2: #2b261e;
+  --c-line: #3a3429;
+  --c-line-strong: #8a806c;
+  --c-fg: #f1e9d8;
+  --c-muted: #bcb09a;
+  --c-brand: #2a7a4b;
+  --c-brand-hover: #348f59;
+  --c-on-brand: #fffdf8;
+  --c-brand-text: #7fd39d;
+  --c-brand-soft: #1a3326;
+  --c-accent: #f2b32e;
+  --c-on-accent: #2a2318;
+  --c-terra: #d9663f;
+  --c-terra-text: #f2a58b;
+  --c-terra-soft: #3a1f17;
+  --c-danger: #c83a31;
+  --c-danger-hover: #a52e26;
+  --c-danger-text: #f4a39b;
+  --c-danger-soft: #3a1a17;
+  --c-success-text: #a8d98e;
+  --c-success-soft: #1f2e18;
+  --c-warning-text: #f0c36a;
+  --c-warning-soft: #35270a;
+  --c-ring: #f2b32e;
+
+  --c-side: #0f1f19;
+  --c-side-fg: #efe8d6;
+  --c-side-muted: #a3b8ab;
+  --c-side-line: #1d3a2d;
+  --c-side-active: #1a3a2c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --c-page: #17140f;
+    --c-surface: #201c16;
+    --c-surface-2: #2b261e;
+    --c-line: #3a3429;
+    --c-line-strong: #8a806c;
+    --c-fg: #f1e9d8;
+    --c-muted: #bcb09a;
+    --c-brand: #2a7a4b;
+    --c-brand-hover: #348f59;
+    --c-on-brand: #fffdf8;
+    --c-brand-text: #7fd39d;
+    --c-brand-soft: #1a3326;
+    --c-accent: #f2b32e;
+    --c-on-accent: #2a2318;
+    --c-terra: #d9663f;
+    --c-terra-text: #f2a58b;
+    --c-terra-soft: #3a1f17;
+    --c-danger: #c83a31;
+    --c-danger-hover: #a52e26;
+    --c-danger-text: #f4a39b;
+    --c-danger-soft: #3a1a17;
+    --c-success-text: #a8d98e;
+    --c-success-soft: #1f2e18;
+    --c-warning-text: #f0c36a;
+    --c-warning-soft: #35270a;
+    --c-ring: #f2b32e;
+
+    --c-side: #0f1f19;
+    --c-side-fg: #efe8d6;
+    --c-side-muted: #a3b8ab;
+    --c-side-line: #1d3a2d;
+    --c-side-active: #1a3a2c;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--c-page);
+    color: var(--c-fg);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--c-accent);
+    color: var(--c-on-accent);
+  }
+
+  /* Valores e quantidades marcados como numéricos usam algarismos de largura fixa (colunas alinham). */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  /* Foco sempre visível para navegação por teclado. */
+  :focus-visible {
+    outline: 2px solid var(--c-ring);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Serifada macia para títulos e números de destaque. */
+  .font-display {
+    font-family: var(--font-display);
+    font-variation-settings: "SOFT" 100;
+    font-variant-numeric: lining-nums;
+  }
+
+  /* Marca-texto: um traço de caneta amarela atrás da palavra. */
+  .marker {
+    background-image: linear-gradient(
+      172deg,
+      transparent 56%,
+      color-mix(in srgb, var(--c-accent) 70%, transparent) 56% 90%,
+      transparent 90%
+    );
+    padding: 0 0.12em;
+    margin: 0 -0.12em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  /* Hachura: mesa bloqueada, itens indisponíveis. */
+  .hatch {
+    background-image: repeating-linear-gradient(135deg, transparent 0 7px, var(--c-line) 7px 8px);
+  }
+}

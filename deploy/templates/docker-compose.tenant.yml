@@ -1,0 +1,109 @@
+# Idêntico para todas as empresas: tudo que varia vem do .env ao lado (copiado pelo
+# provisionar-empresa.sh). Variáveis são interpoladas pelo próprio docker compose.
+name: ${EMPRESA_SLUG}
+
+services:
+  db:
+    image: ${IMAGE_DB}
+    container_name: ${EMPRESA_SLUG}_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_OWNER_USER: ${DB_OWNER_USER}
+      DB_OWNER_PASSWORD: ${DB_OWNER_PASSWORD}
+      DB_APP_USER: ${DB_APP_USER}
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ${DB_INIT_SCRIPT}:/docker-entrypoint-initdb.d/10-roles.sh:ro
+    networks: [net]
+    healthcheck:
+      # -h 127.0.0.1: o servidor temporário da inicialização só escuta no socket unix, então só
+      # o servidor definitivo (depois do script de roles) responde por TCP.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: ${DB_MEM_LIMIT:-1g}
+    cpus: ${DB_CPUS:-1.0}
+    pids_limit: 512
+
+  # Aplica as migrations (role owner) e o bootstrap de permissões. Roda a cada `up`, então a API
+  # nunca sobe contra um schema desatualizado.
+  migrate:
+    image: ${IMAGE_API}:${IMAGE_TAG}
+    container_name: ${EMPRESA_SLUG}_migrate
+    restart: "no"
+    command: ["sh", "-c", "alembic upgrade head && python -m app.cli bootstrap"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_OWNER_URL: ${DATABASE_OWNER_URL}
+      DB_APP_USER: ${DB_APP_USER}
+      EMPRESA_NOME: ${EMPRESA_NOME}
+      EMPRESA_SLUG: ${EMPRESA_SLUG}
+      TIMEZONE: ${TIMEZONE}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      db: {condition: service_healthy}
+    networks: [net]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: ${MIGRATE_MEM_LIMIT:-512m}
+    pids_limit: 256
+
+  api:
+    image: ${IMAGE_API}:${IMAGE_TAG}
+    container_name: ${EMPRESA_SLUG}_api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      EMPRESA_NOME: ${EMPRESA_NOME}
+      EMPRESA_SLUG: ${EMPRESA_SLUG}
+      APP_URL: ${APP_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      TIMEZONE: ${TIMEZONE}
+      COOKIE_SECURE: ${COOKIE_SECURE}
+      TRUSTED_PROXY_CIDRS: ${TRUSTED_PROXY_CIDRS}
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    networks: [net, edge]
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: ${API_MEM_LIMIT:-768m}
+    cpus: ${API_CPUS:-1.5}
+    pids_limit: 256
+
+  web:
+    image: ${IMAGE_WEB}:${IMAGE_TAG}
+    container_name: ${EMPRESA_SLUG}_web
+    restart: unless-stopped
+    networks: [edge]
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: ${WEB_MEM_LIMIT:-128m}
+    cpus: ${WEB_CPUS:-0.5}
+    pids_limit: 128
+
+volumes:
+  db_data:
+    name: ${EMPRESA_SLUG}_db_data
+
+networks:
+  # Sem saída para fora e sem o Nginx: só db, migrate e api conversam aqui.
+  net:
+    name: ${EMPRESA_SLUG}_net
+    internal: true
+  # Onde o Nginx da VPS alcança web e api (sub-rede fixa, usada como proxy confiável da API).
+  # `internal`: api e web não têm saída para a internet (não precisam; só o Nginx fala com elas).
+  edge:
+    name: ${EMPRESA_SLUG}_edge
+    internal: true
+    ipam:
+      config:
+        - subnet: ${SUBNET_EDGE}

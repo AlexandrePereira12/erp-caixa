@@ -1,0 +1,9 @@
+.git
+backend
+deploy/dev
+**/node_modules
+**/dist
+**/.venv
+**/__pycache__
+empresas
+backups

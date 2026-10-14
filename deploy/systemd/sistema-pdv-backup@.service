@@ -1,0 +1,10 @@
+[Unit]
+Description=Backup do banco da empresa %i (sistema-pdv)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+Environment=PDV_ROOT=__RAIZ__
+ExecStart=__RAIZ__/bin/backup-empresa.sh --slug %i
+Nice=10

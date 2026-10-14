@@ -1,0 +1,25 @@
+# Postgres descartável para testes (make db-test-up). Credenciais abaixo não são segredos.
+name: pdv-test
+services:
+  db:
+    image: postgres:16-alpine
+    command: ["postgres", "-c", "fsync=off", "-c", "max_connections=200"]
+    environment:
+      POSTGRES_DB: pdv_test
+      POSTGRES_USER: pdv_admin
+      POSTGRES_PASSWORD: pdv_admin_test
+      DB_OWNER_USER: pdv_owner
+      DB_OWNER_PASSWORD: pdv_owner_test
+      DB_APP_USER: pdv_app
+      DB_APP_PASSWORD: pdv_app_test
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - ../db/10-roles.sh:/docker-entrypoint-initdb.d/10-roles.sh:ro
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U pdv_admin -d pdv_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
