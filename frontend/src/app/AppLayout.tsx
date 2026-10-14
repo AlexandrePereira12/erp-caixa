@@ -5,16 +5,19 @@ import { useNavOpen } from "./useNavOpen";
 import { BrandMark } from "@/components/BrandMark";
 import { Button } from "@/components/Button";
 import { Drawer } from "@/components/Drawer";
-import { ChevronRightIcon, LogoutIcon, MenuIcon } from "@/components/icons";
+import { ChevronRightIcon, MenuIcon } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { logout } from "@/lib/auth/auth";
 import { usePermissions } from "@/lib/auth/hooks";
 
 function Brand() {
   return (
-    <div className="flex items-center gap-2.5 px-4 text-side-fg">
-      <BrandMark size={30} />
-      <span className="font-display text-lg font-semibold">PDV Restaurante</span>
+    <div className="flex items-center gap-3 px-4 text-side-fg">
+      <BrandMark size={32} />
+      <span className="leading-[1.1]">
+        <span className="block text-[0.625rem] tracking-[0.16em] text-side-muted">ERP</span>
+        <span className="block text-[1.0625rem] font-semibold">Restaurante</span>
+      </span>
     </div>
   );
 }
@@ -27,7 +30,7 @@ function initials(nome: string | undefined): string {
   return (first + last).toUpperCase();
 }
 
-const linkBase = "relative flex items-center rounded-md text-sm transition-colors motion-reduce:transition-none focus-visible:outline-accent";
+const linkBase = "relative flex w-full items-center rounded-md text-left transition-colors motion-reduce:transition-none focus-visible:outline-side-accent";
 
 function NavLinkItem({ item, onNavigate, nested }: { item: NavItem; onNavigate: (() => void) | undefined; nested: boolean }) {
   return (
@@ -37,14 +40,13 @@ function NavLinkItem({ item, onNavigate, nested }: { item: NavItem; onNavigate: 
       onClick={onNavigate}
       {...(item.ariaLabel ? { "aria-label": item.ariaLabel } : {})}
       className={({ isActive }) =>
-        `${linkBase} ${nested ? "px-3 py-1.5" : "gap-3 px-3 py-2 font-medium"} ${
+        `${linkBase} px-3 ${nested ? "h-[2.125rem] text-[0.84rem]" : "h-10 text-sm"} ${
           isActive
-            ? `bg-side-active font-semibold text-side-fg ${nested ? "before:absolute before:inset-y-1.5 before:-left-[13px] before:w-[3px] before:rounded-full before:bg-accent" : "before:absolute before:inset-y-2 before:left-0 before:w-[3px] before:rounded-full before:bg-accent"}`
-            : "text-side-muted hover:bg-side-active/60 hover:text-side-fg"
+            ? `bg-side-active font-semibold text-side-fg ${nested ? "shadow-[inset_2px_0_0_var(--c-side-accent)]" : ""}`
+            : `${nested ? "" : "font-medium"} text-side-item hover:bg-side-active/60 hover:text-side-fg`
         }`
       }
     >
-      {!nested && <item.icon />}
       {item.label}
     </NavLink>
   );
@@ -53,20 +55,13 @@ function NavLinkItem({ item, onNavigate, nested }: { item: NavItem; onNavigate: 
 function NavGroup({ module, items, isOpen, isActive, onToggle, onNavigate }: { module: NavModule; items: NavItem[]; isOpen: boolean; isActive: boolean; onToggle: () => void; onNavigate: (() => void) | undefined }) {
   const listId = `nav-${module.id}`;
   return (
-    <li>
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-controls={listId}
-        className={`${linkBase} w-full gap-3 px-3 py-2 text-left font-semibold hover:bg-side-active/60 hover:text-side-fg ${isActive ? "text-side-fg" : "text-side-fg/85"}`}
-      >
-        <module.icon />
-        <span className="flex-1">{module.label}</span>
-        {isActive && !isOpen && <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-accent" />}
+    <li className="mb-0.5">
+      <button type="button" onClick={onToggle} aria-expanded={isOpen} aria-controls={listId} className={`${linkBase} h-9 gap-2 px-3 hover:bg-side-active/60`}>
+        <span className={`flex-1 text-[0.6875rem] font-semibold uppercase tracking-[0.12em] ${isActive ? "text-side-accent" : "text-side-label"}`}>{module.label}</span>
+        {isActive && !isOpen && <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-side-accent" />}
         <ChevronRightIcon width={16} height={16} className={`text-side-muted transition-transform motion-reduce:transition-none ${isOpen ? "rotate-90" : ""}`} />
       </button>
-      <ul id={listId} hidden={!isOpen} className="ml-[1.45rem] mt-0.5 space-y-0.5 border-l border-side-line pl-3">
+      <ul id={listId} hidden={!isOpen} className="mb-1.5 ml-[1.125rem] mt-0.5 space-y-px border-l border-side-line pl-2">
         {items.map((item) => (
           <li key={item.to}>
             <NavLinkItem item={item} onNavigate={onNavigate} nested />
@@ -84,9 +79,9 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
   // Só aparecem os módulos com algum submódulo cuja permissão de listar/ver a pessoa tem.
   const groups = NAV_MODULES.map((module) => ({ module, items: module.items.filter((item) => !item.permission || can(item.permission)) })).filter((group) => group.items.length > 0);
   return (
-    <nav aria-label="Principal" className="flex-1 overflow-y-auto px-3 py-4">
-      <ul className="space-y-0.5">
-        <li>
+    <nav aria-label="Principal" className="flex-1 overflow-y-auto p-3">
+      <ul>
+        <li className="mb-0.5">
           <NavLinkItem item={HOME_ITEM} onNavigate={onNavigate} nested={false} />
         </li>
         {groups.map(({ module, items }) => (
@@ -108,8 +103,8 @@ export function AppLayout() {
         Ir para o conteúdo
       </a>
 
-      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-side-line bg-side text-side-fg lg:flex">
-        <div className="flex h-16 items-center border-b border-side-line">
+      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col bg-side text-side-fg lg:flex">
+        <div className="flex h-16 shrink-0 items-center border-b border-side-line">
           <Brand />
         </div>
         <NavList />
@@ -120,15 +115,15 @@ export function AppLayout() {
           <Brand />
         </div>
         <NavList onNavigate={closeDrawer} />
-        <div className="space-y-2 border-t border-side-line p-3">
-          <div className="px-3">
-            <p className="truncate text-sm font-semibold text-side-fg">{me?.nome}</p>
+        <div className="flex shrink-0 flex-col gap-2.5 border-t border-side-line p-4">
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-side-fg">{me?.nome}</p>
             <p className="truncate text-xs text-side-muted">{me?.email}</p>
           </div>
-          <Link to="/trocar-senha" onClick={closeDrawer} className="block rounded-md px-3 py-2 text-sm font-medium text-side-fg hover:bg-side-active">
+          <Link to="/trocar-senha" onClick={closeDrawer} className="text-sm font-semibold text-side-fg hover:underline">
             Trocar senha
           </Link>
-          <div className="flex items-center justify-between px-3">
+          <div className="flex items-center justify-between">
             <span className="text-xs text-side-muted">Tema</span>
             <ThemeToggle />
           </div>
@@ -136,38 +131,34 @@ export function AppLayout() {
       </Drawer>
 
       <div className="flex min-h-dvh flex-col lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-page/95 px-4 lg:px-8">
-          <Button variant="secondary" size="sm" className="w-9 px-0 lg:hidden" aria-label="Abrir menu" aria-haspopup="dialog" onClick={() => setDrawerOpen(true)}>
+        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-line bg-surface px-4 lg:justify-end lg:gap-5 lg:px-8">
+          <Button variant="secondary" className="w-10 px-0! lg:hidden" aria-label="Abrir menu" aria-haspopup="dialog" onClick={() => setDrawerOpen(true)}>
             <MenuIcon />
           </Button>
-          <span className="flex min-w-0 items-center gap-2 font-display text-lg font-semibold text-fg lg:hidden">
-            <BrandMark size={26} />
-            <span className="truncate">PDV Restaurante</span>
-          </span>
+          <span className="min-w-0 flex-1 truncate text-base font-semibold text-fg lg:hidden">ERP Restaurante</span>
 
-          <div className="ml-auto flex shrink-0 items-center gap-3">
-            <div className="hidden sm:block">
-              <ThemeToggle />
+          <div className="hidden shrink-0 items-center gap-5 lg:flex">
+            <ThemeToggle />
+            <div className="flex items-center gap-2.5">
+              <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-xs font-bold text-on-brand">
+                {initials(me?.nome)}
+              </span>
+              <div className="min-w-0 leading-tight">
+                <p className="truncate text-[0.8125rem] font-semibold text-fg">{me?.nome}</p>
+                <p className="truncate text-xs text-muted">{me?.papeis.join(", ")}</p>
+              </div>
             </div>
-            <span aria-hidden="true" className="hidden h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-bold text-on-accent sm:flex">
-              {initials(me?.nome)}
-            </span>
-            <div className="hidden min-w-0 text-right sm:block">
-              <p className="truncate text-sm font-semibold leading-tight text-fg">{me?.nome}</p>
-              <p className="truncate text-xs text-muted">{me?.papeis.join(", ")}</p>
-            </div>
-            <Link to="/trocar-senha" className="hidden rounded-md px-2 py-1 text-sm font-medium text-brand-text underline decoration-brand-text/30 underline-offset-4 hover:decoration-brand-text sm:block">
+            <Link to="/trocar-senha" className="text-[0.8125rem] font-medium text-fg underline underline-offset-[3px] hover:text-brand-text">
               Trocar senha
             </Link>
-            <Button size="sm" variant="secondary" onClick={() => void logout()}>
-              <LogoutIcon width={16} height={16} />
-              Sair
-            </Button>
           </div>
+          <Button size="sm" variant="secondary" className="shrink-0" onClick={() => void logout()}>
+            Sair
+          </Button>
         </header>
 
-        <main id="conteudo" tabIndex={-1} className="flex-1 px-4 py-6 outline-none lg:px-8 lg:py-9">
-          <div className="mx-auto max-w-6xl">
+        <main id="conteudo" tabIndex={-1} className="flex-1 px-4 pb-12 pt-4 outline-none lg:px-8 lg:pt-8">
+          <div className="mx-auto max-w-[90rem]">
             <Outlet />
           </div>
         </main>

@@ -55,7 +55,7 @@ export function AdjustmentsPanel({ ajustes, canEdit, onAdd, onRemove }: Adjustme
                   {a.tipo === "desconto" ? "−" : "+"} {formatMoney(a.valor_calculado)}
                 </p>
                 {canEdit && (
-                  <Button variant="ghost" className="min-h-11 min-w-11 px-0 text-danger-text" aria-label={`Remover ${a.tipo === "desconto" ? "desconto" : "acréscimo"} de ${formatMoney(a.valor_calculado)}`} onClick={() => setRemoving(a)}>
+                  <Button variant="ghost" className="min-h-11 min-w-11 px-0! text-danger-text" aria-label={`Remover ${a.tipo === "desconto" ? "desconto" : "acréscimo"} de ${formatMoney(a.valor_calculado)}`} onClick={() => setRemoving(a)}>
                     <TrashIcon width={16} height={16} />
                   </Button>
                 )}

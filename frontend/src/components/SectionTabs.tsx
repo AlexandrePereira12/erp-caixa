@@ -40,7 +40,7 @@ export function SectionTabs({ label, prefix, tabs, active, onChange }: { label: 
   }
 
   return (
-    <div role="tablist" aria-label={label} className="flex gap-1 border-b border-line">
+    <div role="tablist" aria-label={label} className="flex gap-1 overflow-x-auto border-b border-line">
       {tabs.map((tab, index) => {
         const selected = tab.id === active;
         return (
@@ -58,7 +58,7 @@ export function SectionTabs({ label, prefix, tabs, active, onChange }: { label: 
             tabIndex={selected ? 0 : -1}
             onClick={() => onChange(tab.id)}
             onKeyDown={(event) => onKeyDown(event, index)}
-            className={`-mb-px border-b-[3px] px-4 py-2.5 text-sm font-medium transition-colors ${selected ? "border-accent font-semibold text-fg" : "border-transparent text-muted hover:border-line-strong hover:text-fg"}`}
+            className={`-mb-px whitespace-nowrap border-b-2 px-4 py-3 transition-colors ${selected ? "border-brand font-semibold text-fg" : "border-transparent font-medium text-muted hover:text-fg"}`}
           >
             {tab.label}
           </button>

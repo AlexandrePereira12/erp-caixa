@@ -32,5 +32,7 @@ class ConfiguracaoEmpresa(Base):
     cancelamento_janela_min: Mapped[int] = mapped_column(
         SmallInteger, default=5, server_default="5"
     )
+    # Pix copia e cola estático da empresa (BR Code). Só o texto: o QR é desenhado no navegador.
+    pix_copia_e_cola: Mapped[str | None] = mapped_column(String(1024))
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     updated_by: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("usuario.id"))

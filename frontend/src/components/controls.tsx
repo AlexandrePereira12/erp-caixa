@@ -2,7 +2,7 @@ import { forwardRef, useState, type InputHTMLAttributes, type SelectHTMLAttribut
 import { EyeIcon, EyeOffIcon } from "./icons";
 
 const control =
-  "block w-full rounded-md border border-line-strong/80 bg-surface px-3 py-2 text-fg shadow-[inset_0_1px_2px_rgb(70_45_10/0.07)] transition-colors placeholder:text-muted hover:border-line-strong disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-danger aria-[invalid=true]:border-2";
+  "block w-full rounded-md border border-control-line bg-input px-3 py-2 text-fg transition-colors placeholder:text-muted focus-visible:border-brand focus-visible:outline-offset-0 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-danger-text aria-[invalid=true]:border-2";
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function Input({ className = "", ...rest }, ref) {
   return <input ref={ref} className={`${control} h-10 ${className}`} {...rest} />;

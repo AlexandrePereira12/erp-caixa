@@ -30,7 +30,7 @@ function DialogContent({ onClose, title, description, children, footer, size = "
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
-      <div className="absolute inset-0 bg-[#14120f]/60" aria-hidden="true" onMouseDown={dismissible ? onClose : undefined} />
+      <div className="absolute inset-0 bg-black/55" aria-hidden="true" onMouseDown={dismissible ? onClose : undefined} />
       <div
         ref={ref}
         role="dialog"
@@ -42,11 +42,11 @@ function DialogContent({ onClose, title, description, children, footer, size = "
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
           <div className="min-w-0">
-            <h2 id={titleId} className="font-display text-xl font-semibold text-fg">
+            <h2 id={titleId} className="text-[1.0625rem] font-semibold text-fg">
               {title}
             </h2>
             {description && (
-              <p id={descriptionId} className="mt-1 text-sm text-muted">
+              <p id={descriptionId} className="mt-0.5 text-[0.8125rem] leading-snug text-muted">
                 {description}
               </p>
             )}
@@ -64,7 +64,7 @@ function DialogContent({ onClose, title, description, children, footer, size = "
         <div data-modal-body className="overflow-y-auto px-5 py-4">
           {children}
         </div>
-        {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-line bg-surface-2/50 px-5 py-3 sm:rounded-b-xl">{footer}</div>}
+        {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-line bg-surface px-5 py-3.5 sm:rounded-b-xl">{footer}</div>}
       </div>
     </div>
   );

@@ -40,12 +40,12 @@ export function DataTable<T>({ caption, columns, rows, getRowKey, isLoading, isF
 
   return (
     <div className="relative overflow-x-auto" aria-busy={isFetching || undefined}>
-      <table role="table" className={`w-full border-collapse text-left text-sm transition-opacity md:min-w-[40rem] max-md:block ${isFetching ? "opacity-60" : ""}`}>
+      <table role="table" className={`w-full border-collapse text-left text-[0.84rem] transition-opacity md:min-w-[40rem] max-md:block ${isFetching ? "opacity-60" : ""}`}>
         <caption className="sr-only">{caption}</caption>
         <thead role="rowgroup" className="max-md:sr-only">
-          <tr role="row" className="border-b border-line bg-surface-2/60 text-xs font-semibold text-muted">
+          <tr role="row" className="border-y border-line-strong bg-surface-2 text-[0.6875rem] font-semibold uppercase tracking-[0.07em] text-muted">
             {columns.map((col) => (
-              <th key={col.key} role="columnheader" scope="col" className={`px-4 py-3 font-medium ${col.headerClassName ?? ""}`}>
+              <th key={col.key} role="columnheader" scope="col" className={`h-10 px-5 font-semibold ${col.headerClassName ?? ""}`}>
                 {col.header}
               </th>
             ))}
@@ -53,13 +53,13 @@ export function DataTable<T>({ caption, columns, rows, getRowKey, isLoading, isF
         </thead>
         <tbody role="rowgroup" className="divide-y divide-line max-md:block">
           {rows.map((row) => (
-            <tr key={getRowKey(row)} role="row" className="align-top hover:bg-surface-2/60 max-md:block max-md:px-4 max-md:py-3">
+            <tr key={getRowKey(row)} role="row" className="align-top hover:bg-surface-2/60 max-md:block max-md:px-4 max-md:py-3.5">
               {columns.map((col) => {
                 const label = col.label ?? (typeof col.header === "string" ? col.header : undefined);
                 return (
-                  <td key={col.key} role="cell" className={`px-4 py-3 max-md:flex max-md:items-baseline max-md:gap-3 max-md:px-0 max-md:py-1 ${col.className ?? ""}`}>
+                  <td key={col.key} role="cell" className={`px-5 py-3.5 max-md:flex max-md:items-baseline max-md:gap-2 max-md:px-0 max-md:py-1 ${col.className ?? ""}`}>
                     {label && (
-                      <span aria-hidden="true" className="w-24 shrink-0 text-xs font-semibold text-muted md:hidden">
+                      <span aria-hidden="true" className="w-[6.5rem] shrink-0 text-[0.6875rem] font-semibold uppercase tracking-[0.06em] text-muted md:hidden">
                         {label}
                       </span>
                     )}

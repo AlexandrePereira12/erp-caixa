@@ -5,7 +5,7 @@ from app.core.audit import Acao, registrar, snapshot
 from app.core.db import get_db
 from app.core.deps import AuthContext, exigir_permissao
 from app.modules.config.models import ConfiguracaoEmpresa
-from app.modules.config.schemas import ConfiguracaoEditarIn, ConfiguracaoOut
+from app.modules.config.schemas import ConfiguracaoEditarIn, ConfiguracaoOut, PixOut
 
 router = APIRouter(prefix="/configuracoes", tags=["configuracoes"])
 
@@ -34,6 +34,9 @@ def editar(
         cfg.taxa_servico_pct = dados.taxa_servico_pct
     if dados.cancelamento_janela_min is not None:
         cfg.cancelamento_janela_min = dados.cancelamento_janela_min
+    if "pix_copia_e_cola" in dados.model_fields_set:
+        # Para onde o dinheiro vai: a mudança sai na auditoria (antes e depois) como as demais.
+        cfg.pix_copia_e_cola = dados.pix_copia_e_cola
     db.flush()
     registrar(
         db,
@@ -47,3 +50,12 @@ def editar(
     )
     db.commit()
     return ConfiguracaoOut.model_validate(cfg)
+
+
+@router.get("/pix", response_model=PixOut)
+def obter_pix(
+    db: Session = Depends(get_db),
+    _: AuthContext = Depends(exigir_permissao("comandas.fechar")),
+) -> PixOut:
+    """Pix da empresa para o fechamento da conta: o caixa monta o QR do valor sem abrir as configurações."""
+    return PixOut.model_validate(db.get_one(ConfiguracaoEmpresa, 1))

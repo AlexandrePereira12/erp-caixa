@@ -11,6 +11,8 @@ def test_semente_vem_do_ambiente_e_admin_edita_com_auditoria(ambiente):
         "timezone": "America/Fortaleza",
         "taxa_servico_pct": "0.00",
         "cancelamento_janela_min": 5,
+        "pix_copia_e_cola": None,
+        "pix_recebedor": None,
     }
     r = c.patch(f"{API}/configuracoes", headers=h, json={"timezone": "America/Sao_Paulo"})
     assert r.status_code == 200 and r.json()["timezone"] == "America/Sao_Paulo"
@@ -36,3 +38,82 @@ def test_gerente_ve_mas_nao_edita(ambiente):
     assert (
         c.patch(f"{API}/configuracoes", headers=h, json={"nome_exibicao": "X"}).status_code == 403
     )
+
+
+PIX = (
+    "00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-4266554400005204000053039865802BR"
+    "5913Fulano de Tal6008BRASILIA62070503***63041D3D"
+)
+
+
+def test_admin_salva_pix_com_recebedor_e_a_mudanca_sai_na_auditoria(ambiente):
+    c = ambiente.cliente()
+    h = login(c, EMAIL_ADMIN, SENHA_ADMIN)
+    # colado com quebra de linha e CRC em minúsculas: volta no formato canônico
+    colado = PIX[:50] + "\n" + PIX[50:-4] + PIX[-4:].lower() + " "
+    r = c.patch(f"{API}/configuracoes", headers=h, json={"pix_copia_e_cola": colado})
+    assert r.status_code == 200
+    assert r.json()["pix_copia_e_cola"] == PIX
+    assert r.json()["pix_recebedor"] == "Fulano de Tal"
+    assert c.get(f"{API}/configuracoes", headers=h).json()["pix_copia_e_cola"] == PIX
+    [log] = auditoria(ambiente, modulo="configuracoes")
+    assert log["campos_alterados"] == ["pix_copia_e_cola"]
+    assert log["antes"]["pix_copia_e_cola"] is None
+    assert log["depois"]["pix_copia_e_cola"] == PIX  # destino do dinheiro: nada de mascarar
+
+
+def test_outra_edicao_nao_apaga_o_pix_e_null_ou_vazio_apagam(ambiente):
+    c = ambiente.cliente()
+    h = login(c, EMAIL_ADMIN, SENHA_ADMIN)
+    c.patch(f"{API}/configuracoes", headers=h, json={"pix_copia_e_cola": PIX})
+    r = c.patch(f"{API}/configuracoes", headers=h, json={"nome_exibicao": "Novo nome"})
+    assert r.json()["pix_copia_e_cola"] == PIX
+    for apagar in (None, "", "  "):
+        c.patch(f"{API}/configuracoes", headers=h, json={"pix_copia_e_cola": PIX})
+        r = c.patch(f"{API}/configuracoes", headers=h, json={"pix_copia_e_cola": apagar})
+        assert r.json()["pix_copia_e_cola"] is None and r.json()["pix_recebedor"] is None
+
+
+def test_pix_invalido_volta_422_com_mensagem_em_portugues_no_campo(ambiente):
+    c = ambiente.cliente()
+    h = login(c, EMAIL_ADMIN, SENHA_ADMIN)
+    r = c.patch(f"{API}/configuracoes", headers=h, json={"pix_copia_e_cola": PIX[:-4] + "0000"})
+    assert r.status_code == 422
+    assert r.json()["erro"]["detalhes"] == [
+        {
+            "campo": "pix_copia_e_cola",
+            "mensagem": "O código está incompleto ou foi alterado (o dígito verificador não confere).",
+        }
+    ]
+    assert c.get(f"{API}/configuracoes", headers=h).json()["pix_copia_e_cola"] is None
+
+
+def test_gerente_ve_o_pix_mas_nao_troca(ambiente):
+    c = ambiente.cliente()
+    h_admin = login(c, EMAIL_ADMIN, SENHA_ADMIN)
+    c.patch(f"{API}/configuracoes", headers=h_admin, json={"pix_copia_e_cola": PIX})
+    criar_usuario("G", "g@x.com", papeis=("Gerente",))
+    h = login(c, "g@x.com", "OutraSenha#2026")
+    assert c.get(f"{API}/configuracoes", headers=h).json()["pix_recebedor"] == "Fulano de Tal"
+    r = c.patch(f"{API}/configuracoes", headers=h, json={"pix_copia_e_cola": None})
+    assert r.status_code == 403
+    assert c.get(f"{API}/configuracoes", headers=h).json()["pix_copia_e_cola"] == PIX
+
+
+def test_caixa_le_o_pix_sem_ver_as_configuracoes(ambiente):
+    c = ambiente.cliente()
+    h_admin = login(c, EMAIL_ADMIN, SENHA_ADMIN)
+    assert c.get(f"{API}/configuracoes/pix", headers=h_admin).json() == {
+        "pix_copia_e_cola": None,
+        "pix_recebedor": None,
+    }
+    c.patch(f"{API}/configuracoes", headers=h_admin, json={"pix_copia_e_cola": PIX})
+    criar_usuario("F", "f@x.com", papeis=("Frente de loja",))
+    criar_usuario("A", "a@x.com", papeis=("Atendente",))
+    h_frente = login(c, "f@x.com", "OutraSenha#2026")
+    assert c.get(f"{API}/configuracoes", headers=h_frente).status_code == 403
+    r = c.get(f"{API}/configuracoes/pix", headers=h_frente)
+    assert r.status_code == 200
+    assert r.json() == {"pix_copia_e_cola": PIX, "pix_recebedor": "Fulano de Tal"}
+    h_atendente = login(c, "a@x.com", "OutraSenha#2026")
+    assert c.get(f"{API}/configuracoes/pix", headers=h_atendente).status_code == 403

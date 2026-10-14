@@ -556,6 +556,26 @@ export interface paths {
         patch: operations["editar_api_v1_configuracoes_patch"];
         trace?: never;
     };
+    "/api/v1/configuracoes/pix": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Obter Pix
+         * @description Pix da empresa para o fechamento da conta: o caixa monta o QR do valor sem abrir as configurações.
+         */
+        get: operations["obter_pix_api_v1_configuracoes_pix_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/contas-pagar": {
         parameters: {
             query?: never;
@@ -2012,6 +2032,8 @@ export interface components {
             cancelamento_janela_min?: number | null;
             /** Nome Exibicao */
             nome_exibicao?: string | null;
+            /** Pix Copia E Cola */
+            pix_copia_e_cola?: string | null;
             /** Taxa Servico Pct */
             taxa_servico_pct?: number | string | null;
             /** Timezone */
@@ -2023,6 +2045,13 @@ export interface components {
             cancelamento_janela_min: number;
             /** Nome Exibicao */
             nome_exibicao: string;
+            /** Pix Copia E Cola */
+            pix_copia_e_cola: string | null;
+            /**
+             * Pix Recebedor
+             * @description Nome do recebedor lido do código, para o administrador conferir se é o dele.
+             */
+            readonly pix_recebedor: string | null;
             /** Taxa Servico Pct */
             taxa_servico_pct: string;
             /** Timezone */
@@ -3105,6 +3134,16 @@ export interface components {
             id: number;
             /** Nome */
             nome: string;
+        };
+        /**
+         * PixOut
+         * @description Pix da empresa para quem recebe o pagamento (caixa), que não precisa ver as configurações.
+         */
+        PixOut: {
+            /** Pix Copia E Cola */
+            pix_copia_e_cola: string | null;
+            /** Pix Recebedor */
+            readonly pix_recebedor: string | null;
         };
         /** PorFormaOut */
         PorFormaOut: {
@@ -6569,6 +6608,71 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ConfiguracaoOut"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
+    obter_pix_api_v1_configuracoes_pix_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PixOut"];
                 };
             };
             /** @description Não autenticado ou token inválido. */

@@ -104,7 +104,7 @@ export function CaixasAbertosSection({ caixas }: { caixas: DashboardOut["caixas_
                 </p>
                 <p className="text-right">
                   <span className="mr-1.5 text-xs text-muted">Esperado</span>
-                  <span className="font-display text-lg font-semibold tabular-nums text-fg">{formatMoney(sumDecimals(caixa.esperado.map((e) => e.total)))}</span>
+                  <span className="text-lg font-bold tabular-nums text-fg">{formatMoney(sumDecimals(caixa.esperado.map((e) => e.total)))}</span>
                 </p>
               </div>
               <p className="text-xs text-muted">Aberto em {formatDateTime(caixa.aberto_em)}</p>

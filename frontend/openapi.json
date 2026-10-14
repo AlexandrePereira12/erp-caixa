@@ -1610,6 +1610,18 @@
             ],
             "title": "Nome Exibicao"
           },
+          "pix_copia_e_cola": {
+            "anyOf": [
+              {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pix Copia E Cola"
+          },
           "taxa_servico_pct": {
             "anyOf": [
               {
@@ -1652,6 +1664,30 @@
             "title": "Nome Exibicao",
             "type": "string"
           },
+          "pix_copia_e_cola": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pix Copia E Cola"
+          },
+          "pix_recebedor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Nome do recebedor lido do código, para o administrador conferir se é o dele.",
+            "readOnly": true,
+            "title": "Pix Recebedor"
+          },
           "taxa_servico_pct": {
             "title": "Taxa Servico Pct",
             "type": "string"
@@ -1665,7 +1701,9 @@
           "nome_exibicao",
           "timezone",
           "taxa_servico_pct",
-          "cancelamento_janela_min"
+          "cancelamento_janela_min",
+          "pix_copia_e_cola",
+          "pix_recebedor"
         ],
         "title": "ConfiguracaoOut",
         "type": "object"
@@ -5121,6 +5159,40 @@
           "nome"
         ],
         "title": "PessoaResumo",
+        "type": "object"
+      },
+      "PixOut": {
+        "description": "Pix da empresa para quem recebe o pagamento (caixa), que não precisa ver as configurações.",
+        "properties": {
+          "pix_copia_e_cola": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pix Copia E Cola"
+          },
+          "pix_recebedor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "readOnly": true,
+            "title": "Pix Recebedor"
+          }
+        },
+        "required": [
+          "pix_copia_e_cola",
+          "pix_recebedor"
+        ],
+        "title": "PixOut",
         "type": "object"
       },
       "PorFormaOut": {
@@ -11469,6 +11541,83 @@
           }
         ],
         "summary": "Editar",
+        "tags": [
+          "configuracoes"
+        ]
+      }
+    },
+    "/api/v1/configuracoes/pix": {
+      "get": {
+        "description": "Pix da empresa para o fechamento da conta: o caixa monta o QR do valor sem abrir as configurações.",
+        "operationId": "obter_pix_api_v1_configuracoes_pix_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PixOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Obter Pix",
         "tags": [
           "configuracoes"
         ]

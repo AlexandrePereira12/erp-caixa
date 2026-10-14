@@ -22,7 +22,7 @@ export function ReportSection({ title, description, actions, flush = false, clas
       <Card className="h-full">
         <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 border-b border-line px-4 py-3">
           <div className="min-w-0">
-            <Heading id={id} className="font-display text-lg font-semibold leading-snug text-fg">
+            <Heading id={id} className="text-lg font-semibold leading-snug text-fg">
               {title}
             </Heading>
             {description && <p className="mt-0.5 text-sm text-muted">{description}</p>}

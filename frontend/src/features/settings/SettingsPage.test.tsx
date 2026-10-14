@@ -136,3 +136,80 @@ describe("SettingsPage", () => {
     expect(mock.callsTo("PATCH /api/v1/configuracoes")).toHaveLength(0);
   });
 });
+
+const PIX = "00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-4266554400005204000053039865802BR5913Fulano de Tal6008BRASILIA62070503***63041D3D";
+const CFG_PIX = { ...CFG, nome_exibicao: "Zé", pix_copia_e_cola: PIX, pix_recebedor: "Fulano de Tal" };
+
+describe("SettingsPage: Pix copia e cola", () => {
+  it("sem Pix cadastrado não mostra QR Code", async () => {
+    const mock = mockApi();
+    signIn();
+    mock.on("GET /api/v1/configuracoes", json(200, { ...CFG, pix_copia_e_cola: null, pix_recebedor: null }));
+    renderApp("/configuracoes");
+
+    expect(((await screen.findByLabelText("Pix copia e cola")) as HTMLTextAreaElement).value).toBe("");
+    expect(screen.queryByRole("img", { name: "QR Code do Pix da empresa" })).toBeNull();
+  });
+
+  it("mostra o QR Code, o recebedor e o código salvo, inclusive para quem só pode ver", async () => {
+    const mock = mockApi();
+    signIn({ permissoes: ["configuracoes.ver"] });
+    mock.on("GET /api/v1/configuracoes", json(200, CFG_PIX));
+    renderApp("/configuracoes");
+
+    const campo = (await screen.findByLabelText("Pix copia e cola")) as HTMLTextAreaElement;
+    expect(campo.value).toBe(PIX);
+    expect(campo.disabled).toBe(true);
+    const qr = screen.getByRole("img", { name: "QR Code do Pix da empresa" });
+    expect(qr.querySelector("path")?.getAttribute("d")?.length).toBeGreaterThan(100);
+    expect(screen.getByText("Fulano de Tal")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Copiar o Pix copia e cola" })).toBeTruthy();
+  });
+
+  it("envia o Pix colado e passa a mostrar o QR Code", async () => {
+    const mock = mockApi();
+    signIn();
+    mock.on("GET /api/v1/configuracoes", json(200, { ...CFG, nome_exibicao: "Zé", pix_copia_e_cola: null, pix_recebedor: null }));
+    mock.on("PATCH /api/v1/configuracoes", json(200, CFG_PIX));
+    const { user } = renderApp("/configuracoes");
+
+    await user.click(await screen.findByLabelText("Pix copia e cola"));
+    await user.paste(`  ${PIX}\n`);
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    await waitFor(() => expect(mock.callsTo("PATCH /api/v1/configuracoes")).toHaveLength(1));
+    expect(mock.callsTo("PATCH /api/v1/configuracoes")[0]!.body).toEqual({ pix_copia_e_cola: PIX });
+    expect(await screen.findByRole("img", { name: "QR Code do Pix da empresa" })).toBeTruthy();
+  });
+
+  it("esvaziar o campo envia null e o QR Code some", async () => {
+    const mock = mockApi();
+    signIn();
+    mock.on("GET /api/v1/configuracoes", json(200, CFG_PIX));
+    mock.on("PATCH /api/v1/configuracoes", json(200, { ...CFG_PIX, pix_copia_e_cola: null, pix_recebedor: null }));
+    const { user } = renderApp("/configuracoes");
+
+    await user.clear(await screen.findByLabelText("Pix copia e cola"));
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    await waitFor(() => expect(mock.callsTo("PATCH /api/v1/configuracoes")[0]!.body).toEqual({ pix_copia_e_cola: null }));
+    await waitFor(() => expect(screen.queryByRole("img", { name: "QR Code do Pix da empresa" })).toBeNull());
+  });
+
+  it("código recusado pelo backend aparece no campo e o QR Code não muda", async () => {
+    const mock = mockApi();
+    signIn();
+    mock.on("GET /api/v1/configuracoes", json(200, { ...CFG, nome_exibicao: "Zé", pix_copia_e_cola: null, pix_recebedor: null }));
+    const mensagem = "O código está incompleto ou foi alterado (o dígito verificador não confere).";
+    mock.on("PATCH /api/v1/configuracoes", apiError(422, "validacao", "Dados inválidos.", [{ campo: "body.pix_copia_e_cola", mensagem }]));
+    const { user } = renderApp("/configuracoes");
+
+    await user.click(await screen.findByLabelText("Pix copia e cola"));
+    await user.paste("00020126580014br.gov.bcb.pix6304ABCD");
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    expect(await screen.findByText(mensagem)).toBeTruthy();
+    expect(screen.getByLabelText("Pix copia e cola").getAttribute("aria-invalid")).toBe("true");
+    expect(screen.queryByRole("img", { name: "QR Code do Pix da empresa" })).toBeNull();
+  });
+});

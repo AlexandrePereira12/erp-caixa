@@ -19,7 +19,7 @@ function DrawerContent({ onClose, label, children }: { onClose: () => void; labe
   useModal(ref, onClose);
   return (
     <div className="fixed inset-0 z-50 lg:hidden">
-      <div className="absolute inset-0 bg-[#14120f]/60" aria-hidden="true" onMouseDown={onClose} />
+      <div className="absolute inset-0 bg-black/55" aria-hidden="true" onMouseDown={onClose} />
       <div ref={ref} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} className="relative flex h-full w-72 max-w-[85vw] flex-col bg-side text-side-fg shadow-xl">
         <button
           type="button"

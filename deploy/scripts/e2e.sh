@@ -38,6 +38,18 @@ bash "$REPO/deploy/scripts/preparar-servidor.sh" --raiz "$T" --sem-systemd --bin
   --porta-http "$PORTA" --porta-https $((PORTA + 1)) --nginx-container "$NGINX" --dominio localhost \
   --acme-email nao-usado@example.com >/dev/null 2>&1 || die "preparar-servidor.sh falhou"
 
+# A suíte faz dezenas de logins e renovações de sessão em poucos segundos, todos do mesmo IP. Com os
+# limites de produção (20 e 30 por minuto) o fim da suíte (celular) leva 429 na renovação e cai no login,
+# sem nenhum defeito na tela. O limite em si é provado em testar-isolamento.sh; aqui só este Nginx
+# descartável é afrouxado. Reescreve o arquivo no mesmo inode (o bind-mount de arquivo único não
+# enxerga um `sed -i`, que troca o inode).
+conf_nginx="$T/nginx/nginx.conf"
+sed -E 's#(zone=(login|sessao):10m rate=)[0-9]+r/m#\16000r/m#' "$conf_nginx" >"$conf_nginx.novo"
+cat "$conf_nginx.novo" >"$conf_nginx" && rm -f "$conf_nginx.novo"
+grep -q 'rate=6000r/m' "$conf_nginx" || die "não consegui afrouxar o limite de taxa do Nginx do E2E"
+docker exec "$NGINX" nginx -t >/dev/null 2>&1 || die "nginx.conf do E2E inválido"
+docker exec "$NGINX" nginx -s reload >/dev/null 2>&1 || die "reload do Nginx do E2E falhou"
+
 SAIDA="$("$T/bin/provisionar-empresa.sh" --raiz "$T" --slug "$SLUG" --nome "Restaurante E2E" \
   --admin-email "admin@$SLUG.example.com" --admin-nome "Admin E2E" --sem-tls --sem-pull --sem-systemd 2>"$T/prov.log")" \
   || { cat "$T/prov.log" >&2; die "provisionamento falhou"; }

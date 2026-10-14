@@ -29,15 +29,15 @@ test.describe("menu por módulos e tema", () => {
 
     await page.getByRole("radio", { name: "Tema escuro" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-    expect(await fundo()).toBe("rgb(23, 20, 15)");
+    expect(await fundo()).toBe("rgb(17, 18, 20)");
 
     await page.reload(); // sem piscar: o tema salvo é aplicado antes da primeira pintura
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-    expect(await fundo()).toBe("rgb(23, 20, 15)");
+    expect(await fundo()).toBe("rgb(17, 18, 20)");
 
     await page.getByRole("radio", { name: "Tema claro" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-    expect(await fundo()).toBe("rgb(246, 241, 231)");
+    expect(await fundo()).toBe("rgb(243, 244, 246)");
 
     await page.getByRole("radio", { name: "Tema do sistema" }).click();
     await expect(page.locator("html")).not.toHaveAttribute("data-theme", /.+/);

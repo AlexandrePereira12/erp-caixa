@@ -168,13 +168,13 @@ export function ContaPagarDetailPage() {
         <h2 className="sr-only">Valores</h2>
         <dl className="grid gap-4 sm:grid-cols-3">
           <Info label="Valor original">
-            <span className="font-display text-xl font-semibold tabular-nums">{formatMoney(t.valor_original)}</span>
+            <span className="text-xl font-bold tabular-nums">{formatMoney(t.valor_original)}</span>
           </Info>
           <Info label="Valor pago">
-            <span className="font-display text-xl font-semibold tabular-nums">{formatMoney(t.valor_pago)}</span>
+            <span className="text-xl font-bold tabular-nums">{formatMoney(t.valor_pago)}</span>
           </Info>
           <Info label="Saldo a pagar">
-            <span className="font-display text-2xl font-semibold tabular-nums">{formatMoney(saldoVisivel(t))}</span>
+            <span className="text-2xl font-bold tabular-nums">{formatMoney(saldoVisivel(t))}</span>
           </Info>
         </dl>
       </Card>

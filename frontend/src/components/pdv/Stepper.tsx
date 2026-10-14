@@ -49,7 +49,7 @@ export function Stepper({ label, value, onChange, casas, min = "0" }: StepperPro
         autoComplete="off"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="block min-h-11 w-24 rounded-md border border-line-strong bg-surface px-3 text-center text-fg aria-[invalid=true]:border-2 aria-[invalid=true]:border-danger"
+        className="block min-h-11 w-24 rounded-md border border-control-line bg-input px-3 text-center text-fg aria-[invalid=true]:border-2 aria-[invalid=true]:border-danger-text"
         aria-invalid={value.trim() !== "" && parsed === null ? true : undefined}
       />
       <button

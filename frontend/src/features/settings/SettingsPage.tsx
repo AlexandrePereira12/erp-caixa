@@ -3,10 +3,11 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useSettings, useUpdateSettings } from "./api";
+import { PixPreview } from "./PixPreview";
 import { Alert } from "@/components/Alert";
 import { Button } from "@/components/Button";
 import { Card, PageHeader } from "@/components/Card";
-import { Input, Select } from "@/components/controls";
+import { Input, Select, Textarea } from "@/components/controls";
 import { FormField } from "@/components/FormField";
 import { ErrorState, LoadingBlock } from "@/components/States";
 import { useToast } from "@/components/Toast";
@@ -37,6 +38,8 @@ const schema = z.object({
       const n = toInt(v);
       return n !== undefined && n <= 240;
     }, "Informe de 0 a 240 minutos."),
+  // Texto colado do app do banco; o formato (EMV, CRC, sem valor) quem confere é o backend.
+  pix_copia_e_cola: z.string().max(2048, "O código é longo demais."),
 });
 type FormValues = z.infer<typeof schema>;
 
@@ -49,6 +52,7 @@ function formValues(settings: ConfiguracaoOut): FormValues {
     timezone: settings.timezone,
     taxa_servico_pct: toField(settings.taxa_servico_pct),
     cancelamento_janela_min: String(settings.cancelamento_janela_min),
+    pix_copia_e_cola: settings.pix_copia_e_cola ?? "",
   };
 }
 
@@ -74,12 +78,15 @@ function SettingsForm({ settings, readOnly }: { settings: ConfiguracaoOut; readO
     if (taxa !== null && compareDecimal(taxa, settings.taxa_servico_pct) !== 0) body.taxa_servico_pct = taxa;
     const janela = toInt(values.cancelamento_janela_min);
     if (janela !== undefined && janela !== settings.cancelamento_janela_min) body.cancelamento_janela_min = janela;
+    const pix = values.pix_copia_e_cola.trim();
+    // Campo esvaziado apaga o Pix (null); o backend devolve o texto já no formato canônico.
+    if (pix !== (settings.pix_copia_e_cola ?? "")) body.pix_copia_e_cola = pix === "" ? null : pix;
     try {
       const saved = await update.mutateAsync(body);
       reset(formValues(saved));
       toast.success("Configurações salvas.");
     } catch (error) {
-      setFormError(applyServerError(error, setError, ["nome_exibicao", "timezone", "taxa_servico_pct", "cancelamento_janela_min"]));
+      setFormError(applyServerError(error, setError, ["nome_exibicao", "timezone", "taxa_servico_pct", "cancelamento_janela_min", "pix_copia_e_cola"]));
     }
   }
 
@@ -126,6 +133,13 @@ function SettingsForm({ settings, readOnly }: { settings: ConfiguracaoOut; readO
       >
         <Input inputMode="numeric" autoComplete="off" disabled={readOnly} {...register("cancelamento_janela_min")} />
       </FormField>
+      <FormField
+        label="Pix copia e cola"
+        error={errors.pix_copia_e_cola?.message}
+        hint="Cole o Pix copia e cola da chave da empresa (no app do banco, em Pix > Receber), sem valor. Deixe em branco para não usar. O QR Code aparece abaixo depois de salvar."
+      >
+        <Textarea rows={4} autoComplete="off" spellCheck={false} disabled={readOnly} className="font-mono text-xs" {...register("pix_copia_e_cola")} />
+      </FormField>
       {!readOnly && (
         <Button type="submit" variant="primary" loading={isSubmitting} disabled={!isDirty}>
           Salvar
@@ -154,6 +168,7 @@ export function SettingsPage() {
           </div>
         )}
       </Card>
+      {settings.data?.pix_copia_e_cola && <PixPreview code={settings.data.pix_copia_e_cola} recebedor={settings.data.pix_recebedor} />}
     </div>
   );
 }

@@ -17,7 +17,7 @@ import { usePermissions } from "@/lib/auth/hooks";
 import { formatDateTime } from "@/lib/format";
 import { usePageTitle } from "@/lib/usePageTitle";
 
-const STATUS_TONES: Record<string, BadgeTone> = { aberto: "brand", fechado: "success", cancelado: "neutral" };
+const STATUS_TONES: Record<string, BadgeTone> = { aberto: "info", fechado: "success", cancelado: "neutral" };
 
 function parseStatus(value: string | null): InventoryStatus | undefined {
   return INVENTORY_STATUSES.find((status) => status === value);

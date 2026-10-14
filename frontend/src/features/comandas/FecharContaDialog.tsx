@@ -16,6 +16,7 @@ import { LoadingBlock } from "@/components/States";
 import { useCaixaAtual } from "@/features/caixa/api";
 import { useSaldoAberto } from "@/features/financeiro/api";
 import { useFormas } from "@/features/formas-pagamento/api";
+import { usePix } from "@/features/settings/api";
 import { VendaReceipt } from "@/features/vendas/VendaReceipt";
 import { ApiError, errorMessage } from "@/lib/api/errors";
 import { usePermissions } from "@/lib/auth/hooks";
@@ -44,6 +45,8 @@ export function FecharContaDialog({ comanda, onClose }: FecharContaDialogProps) 
   const canListFormas = can("formas_pagamento.listar");
   const formasQuery = useFormas({ ativa: true, enabled: canListFormas });
   const caixaQuery = useCaixaAtual({ enabled: can("caixa.operar") });
+  // Só alimenta o QR Code do Pix: se falhar, a conta fecha do mesmo jeito, sem o QR.
+  const pixQuery = usePix();
   const fechar = useFecharComanda();
 
   const formas = useMemo(() => (formasQuery.data ?? []).filter((f) => f.tipo !== "fiado" || can("vendas.fiado")), [formasQuery.data, can]);
@@ -156,7 +159,7 @@ export function FecharContaDialog({ comanda, onClose }: FecharContaDialogProps) 
       <form id={formId} onSubmit={(e) => void submit(e)} noValidate className="space-y-4">
         <section aria-label="Resumo do pagamento" className="rounded-md border border-line bg-surface-2 p-3" aria-live="polite">
           <p className="text-sm font-semibold text-muted">Total da comanda</p>
-          <p className="font-display text-4xl font-semibold tabular-nums text-fg">{formatMoney(total)}</p>
+          <p className="text-4xl font-bold tabular-nums text-fg">{formatMoney(total)}</p>
           {!totalZero && (
             <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
               <dt className="text-muted">Pagamentos informados (prévia)</dt>
@@ -220,6 +223,7 @@ export function FecharContaDialog({ comanda, onClose }: FecharContaDialogProps) 
                 formas={formas}
                 onChange={(change) => patch(linha.key, change)}
                 onRemove={() => setLinhas((list) => list.filter((l) => l.key !== linha.key))}
+                pix={pixQuery.data ? pixQuery.data.pix_copia_e_cola : undefined}
               />
             ))}
           </div>
@@ -283,11 +287,11 @@ function SaleSuccess({ venda }: { venda: Venda }) {
     <div className="space-y-4" role="status">
       <div className="rounded-md border border-success-text/60 bg-success-soft p-4 text-center">
         <p className="text-sm font-semibold text-success-text">Total da venda</p>
-        <p className="font-display text-4xl font-semibold tabular-nums text-fg">{formatMoney(venda.total)}</p>
+        <p className="text-4xl font-bold tabular-nums text-fg">{formatMoney(venda.total)}</p>
       </div>
       <div className={`rounded-md border p-4 text-center ${temTroco ? "border-brand-text bg-brand-soft" : "border-line bg-surface-2"}`}>
         <p className="text-sm font-semibold text-muted">Troco</p>
-        <p className="font-display text-5xl font-semibold tabular-nums text-fg">{formatMoney(venda.troco_total)}</p>
+        <p className="text-5xl font-bold tabular-nums text-fg">{formatMoney(venda.troco_total)}</p>
         {!temTroco && <p className="text-sm text-muted">Sem troco a devolver.</p>}
       </div>
       <ul className="divide-y divide-line rounded-md border border-line text-sm">

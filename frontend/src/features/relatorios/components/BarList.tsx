@@ -30,8 +30,8 @@ export function BarList({ items, ariaLabel, className = "" }: BarListProps) {
             <span className="min-w-0 break-words text-fg">{item.label}</span>
             <span className="shrink-0 font-medium tabular-nums text-fg">{item.valueText}</span>
           </div>
-          <div className="mt-1 h-2.5 overflow-hidden rounded-full bg-surface-2">
-            <div className="h-full rounded-full bg-brand" style={{ width: `${barPercent(item.value, max)}%` }} />
+          <div className="mt-1.5 h-1.5 overflow-hidden rounded-[3px] bg-surface-2">
+            <div className="h-full rounded-[3px] bg-brand" style={{ width: `${barPercent(item.value, max)}%` }} />
           </div>
         </div>
       ))}

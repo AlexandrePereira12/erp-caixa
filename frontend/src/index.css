@@ -1,28 +1,45 @@
 @import "tailwindcss";
-@import "@fontsource-variable/figtree/wght.css";
-@import "@fontsource-variable/fraunces/soft.css";
-@import "@fontsource/courier-prime/latin-400.css";
-@import "@fontsource/courier-prime/latin-700.css";
 
 /*
- * Identidade: cozinha de casa. Fundo de papel cremoso, tinta marrom-escura, verde-folha nas ações,
- * amarelo-gema como marca-texto e terracota para "mesa em uso". Títulos e valores grandes em
- * Fraunces (serifada macia, com jeito de cardápio); o resto em Figtree. Courier Prime só no recibo.
+ * Inter self-hosted (a CSP do Nginx é `default-src 'self'`, então fonte de CDN seria bloqueada). Só os
+ * subconjuntos latinos entram no build: o `wght.css` do pacote traria também grego, cirílico e vietnamita.
+ */
+@font-face {
+  font-family: "Inter Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("../node_modules/@fontsource-variable/inter/files/inter-latin-ext-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Inter Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/*
+ * Identidade: sistema de design da RastroSystem (teal como ação, neutros frios, lateral grafite fixa,
+ * Inter em tudo). Os valores vêm do projeto "ERP Restaurante redesenhado" do Claude Design.
  *
  * Os componentes usam só os nomes semânticos (bg-surface, text-muted...). O tema vem de
  * `data-theme` no <html> ("light" | "dark"; ausente = segue o sistema) e é trocado em lib/theme.ts.
  * Pares de cor conferidos para contraste AA (texto 4,5:1; bordas de controle e foco 3:1).
  */
 @theme inline {
-  --font-sans: "Figtree Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
-  --font-mono: "Courier Prime", ui-monospace, Menlo, Consolas, monospace;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
   --color-page: var(--c-page);
   --color-surface: var(--c-surface);
   --color-surface-2: var(--c-surface-2);
+  --color-input: var(--c-input);
   --color-line: var(--c-line);
   --color-line-strong: var(--c-line-strong);
+  --color-control-line: var(--c-control-line);
   --color-fg: var(--c-fg);
   --color-muted: var(--c-muted);
   --color-brand: var(--c-brand);
@@ -30,157 +47,150 @@
   --color-on-brand: var(--c-on-brand);
   --color-brand-text: var(--c-brand-text);
   --color-brand-soft: var(--c-brand-soft);
-  --color-accent: var(--c-accent);
-  --color-on-accent: var(--c-on-accent);
-  --color-terra: var(--c-terra);
-  --color-terra-text: var(--c-terra-text);
-  --color-terra-soft: var(--c-terra-soft);
   --color-danger: var(--c-danger);
   --color-danger-hover: var(--c-danger-hover);
+  --color-on-danger: var(--c-on-danger);
   --color-danger-text: var(--c-danger-text);
   --color-danger-soft: var(--c-danger-soft);
   --color-success-text: var(--c-success-text);
   --color-success-soft: var(--c-success-soft);
   --color-warning-text: var(--c-warning-text);
   --color-warning-soft: var(--c-warning-soft);
+  --color-info-text: var(--c-info-text);
+  --color-info-soft: var(--c-info-soft);
+  --color-neutral-text: var(--c-neutral-text);
+  --color-neutral-soft: var(--c-neutral-soft);
   --color-ring: var(--c-ring);
   --color-side: var(--c-side);
   --color-side-fg: var(--c-side-fg);
+  --color-side-item: var(--c-side-item);
   --color-side-muted: var(--c-side-muted);
+  --color-side-label: var(--c-side-label);
   --color-side-line: var(--c-side-line);
   --color-side-active: var(--c-side-active);
+  --color-side-accent: var(--c-side-accent);
 }
 
-/* Cantos macios e sombras quentes: ficha de balcão, não painel de laboratório. */
+/* Cantos de 4 a 12 px e sombra só onde algo flutua (janela, aviso). Cartão é plano, separado por filete. */
 @theme {
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 9px;
-  --radius-lg: 13px;
-  --radius-xl: 18px;
-  --radius-2xl: 24px;
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 12px;
 
-  --shadow-xs: 0 1px 1px rgb(70 45 10 / 0.06);
-  --shadow-sm: 0 1px 2px rgb(70 45 10 / 0.08), 0 1px 1px rgb(70 45 10 / 0.04);
-  --shadow-md: 0 6px 16px -6px rgb(70 45 10 / 0.2), 0 1px 2px rgb(70 45 10 / 0.08);
-  --shadow-lg: 0 14px 30px -12px rgb(70 45 10 / 0.3);
-  --shadow-xl: 0 28px 56px -20px rgb(70 45 10 / 0.42);
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.14);
+  --shadow-lg: 0 10px 24px -6px rgb(0 0 0 / 0.2);
+  --shadow-xl: 0 24px 60px rgb(0 0 0 / 0.35);
 }
 
 :root {
   color-scheme: light;
 
-  --c-page: #f6f1e7;
-  --c-surface: #fffdf8;
-  --c-surface-2: #efe8d9;
-  --c-line: #e2d9c5;
-  --c-line-strong: #8c8068;
-  --c-fg: #2a2318;
-  --c-muted: #685d4a;
-  --c-brand: #2a7a4b;
-  --c-brand-hover: #1f6039;
-  --c-on-brand: #fffdf8;
-  --c-brand-text: #1d6a3e;
-  --c-brand-soft: #e0f0e3;
-  --c-accent: #f2b32e;
-  --c-on-accent: #2a2318;
-  --c-marker: rgb(242 179 46 / 0.7);
-  --c-terra: #c4532f;
-  --c-terra-text: #a63d21;
-  --c-terra-soft: #fbe4da;
-  --c-danger: #b3261e;
-  --c-danger-hover: #8c1d17;
-  --c-danger-text: #a3221a;
-  --c-danger-soft: #fbe8e4;
-  --c-success-text: #2c6b2f;
-  --c-success-soft: #e3f1d9;
-  --c-warning-text: #7a4a00;
-  --c-warning-soft: #fdf0c8;
-  --c-ring: #1d6a3e;
+  --c-page: #f3f4f6;
+  --c-surface: #ffffff;
+  --c-surface-2: #eef0f3;
+  --c-input: #ffffff;
+  --c-line: #dfe2e7;
+  --c-line-strong: #c3c8d0;
+  /* Borda de campo de formulário: é a única pista de onde clicar, então precisa de 3:1 contra o fundo. */
+  --c-control-line: #8a919b;
+  --c-fg: #1f2328;
+  --c-muted: #58616d;
+  --c-brand: #00797c;
+  --c-brand-hover: #005c5d;
+  --c-on-brand: #ffffff;
+  --c-brand-text: #00797c;
+  --c-brand-soft: #e1f2f2;
+  --c-danger: #a31d24;
+  --c-danger-hover: #8e1119;
+  --c-on-danger: #ffffff;
+  --c-danger-text: #a31d24;
+  --c-danger-soft: #fce8e8;
+  --c-success-text: #1b5e20;
+  --c-success-soft: #e1f1e2;
+  --c-warning-text: #7a4b00;
+  --c-warning-soft: #fcefc9;
+  --c-info-text: #0d4f94;
+  --c-info-soft: #e2eefb;
+  --c-neutral-text: #3f4752;
+  --c-neutral-soft: #e8eaed;
+  --c-ring: #00797c;
 
-  --c-side: #17352a;
-  --c-side-fg: #f3ecdc;
-  --c-side-muted: #b3c6b9;
-  --c-side-line: #264a3b;
-  --c-side-active: #21493a;
+  /* A lateral é grafite nos dois temas. */
+  --c-side: #1b1d1f;
+  --c-side-fg: #ffffff;
+  --c-side-item: #c4c4c4;
+  --c-side-muted: #9e9e9e;
+  --c-side-label: #8fcfd0;
+  --c-side-line: #34373b;
+  --c-side-active: rgb(255 255 255 / 0.12);
+  --c-side-accent: #4dd4d5;
 }
 
 /* Tema escuro: escolhido à mão (data-theme="dark") ou, sem escolha, pelo sistema. */
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --c-page: #17140f;
-  --c-surface: #201c16;
-  --c-surface-2: #2b261e;
-  --c-line: #3a3429;
-  --c-line-strong: #8a806c;
-  --c-fg: #f1e9d8;
-  --c-muted: #bcb09a;
-  --c-brand: #2a7a4b;
-  --c-brand-hover: #348f59;
-  --c-on-brand: #fffdf8;
-  --c-brand-text: #7fd39d;
-  --c-brand-soft: #1a3326;
-  --c-accent: #f2b32e;
-  --c-on-accent: #2a2318;
-  --c-marker: rgb(242 179 46 / 0.38);
-  --c-terra: #d9663f;
-  --c-terra-text: #f2a58b;
-  --c-terra-soft: #3a1f17;
-  --c-danger: #c83a31;
-  --c-danger-hover: #a52e26;
-  --c-danger-text: #f4a39b;
-  --c-danger-soft: #3a1a17;
-  --c-success-text: #a8d98e;
-  --c-success-soft: #1f2e18;
-  --c-warning-text: #f0c36a;
-  --c-warning-soft: #35270a;
-  --c-ring: #f2b32e;
-
-  --c-side: #0f1f19;
-  --c-side-fg: #efe8d6;
-  --c-side-muted: #a3b8ab;
-  --c-side-line: #1d3a2d;
-  --c-side-active: #1a3a2c;
+  --c-page: #111214;
+  --c-surface: #1a1c1f;
+  --c-surface-2: #212327;
+  --c-input: #141517;
+  --c-line: #2e3136;
+  --c-line-strong: #454a51;
+  --c-control-line: #6b727b;
+  --c-fg: #ececee;
+  --c-muted: #9ca3ad;
+  --c-brand: #26c5c7;
+  --c-brand-hover: #4dd4d5;
+  --c-on-brand: #00282a;
+  --c-brand-text: #26c5c7;
+  --c-brand-soft: rgb(38 197 199 / 0.14);
+  --c-danger-text: #ff8a8f;
+  --c-danger-soft: rgb(211 47 47 / 0.22);
+  --c-success-text: #7fd68a;
+  --c-success-soft: rgb(46 125 50 / 0.24);
+  --c-warning-text: #f5c04a;
+  --c-warning-soft: rgb(249 168 37 / 0.16);
+  --c-info-text: #7db8f0;
+  --c-info-soft: rgb(25 118 210 / 0.22);
+  --c-neutral-text: #c3c8cf;
+  --c-neutral-soft: #2a2d31;
+  --c-ring: #26c5c7;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --c-page: #17140f;
-    --c-surface: #201c16;
-    --c-surface-2: #2b261e;
-    --c-line: #3a3429;
-    --c-line-strong: #8a806c;
-    --c-fg: #f1e9d8;
-    --c-muted: #bcb09a;
-    --c-brand: #2a7a4b;
-    --c-brand-hover: #348f59;
-    --c-on-brand: #fffdf8;
-    --c-brand-text: #7fd39d;
-    --c-brand-soft: #1a3326;
-    --c-accent: #f2b32e;
-    --c-on-accent: #2a2318;
-    --c-marker: rgb(242 179 46 / 0.38);
-    --c-terra: #d9663f;
-    --c-terra-text: #f2a58b;
-    --c-terra-soft: #3a1f17;
-    --c-danger: #c83a31;
-    --c-danger-hover: #a52e26;
-    --c-danger-text: #f4a39b;
-    --c-danger-soft: #3a1a17;
-    --c-success-text: #a8d98e;
-    --c-success-soft: #1f2e18;
-    --c-warning-text: #f0c36a;
-    --c-warning-soft: #35270a;
-    --c-ring: #f2b32e;
-
-    --c-side: #0f1f19;
-    --c-side-fg: #efe8d6;
-    --c-side-muted: #a3b8ab;
-    --c-side-line: #1d3a2d;
-    --c-side-active: #1a3a2c;
+    --c-page: #111214;
+    --c-surface: #1a1c1f;
+    --c-surface-2: #212327;
+    --c-input: #141517;
+    --c-line: #2e3136;
+    --c-line-strong: #454a51;
+    --c-control-line: #6b727b;
+    --c-fg: #ececee;
+    --c-muted: #9ca3ad;
+    --c-brand: #26c5c7;
+    --c-brand-hover: #4dd4d5;
+    --c-on-brand: #00282a;
+    --c-brand-text: #26c5c7;
+    --c-brand-soft: rgb(38 197 199 / 0.14);
+    --c-danger-text: #ff8a8f;
+    --c-danger-soft: rgb(211 47 47 / 0.22);
+    --c-success-text: #7fd68a;
+    --c-success-soft: rgb(46 125 50 / 0.24);
+    --c-warning-text: #f5c04a;
+    --c-warning-soft: rgb(249 168 37 / 0.16);
+    --c-info-text: #7db8f0;
+    --c-info-soft: rgb(25 118 210 / 0.22);
+    --c-neutral-text: #c3c8cf;
+    --c-neutral-soft: #2a2d31;
+    --c-ring: #26c5c7;
   }
 }
 
@@ -193,25 +203,16 @@
     background-color: var(--c-page);
     color: var(--c-fg);
     font-family: var(--font-sans);
-    font-size: 0.9375rem;
-    line-height: 1.55;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    /* Algarismos de largura fixa em tudo: colunas de valores alinham sem marcar cada célula. */
+    font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
   }
 
-  h2,
-  h3 {
-    font-family: var(--font-display);
-    font-variation-settings: "SOFT" 100;
-  }
-
   ::selection {
-    background: var(--c-accent);
-    color: var(--c-on-accent);
-  }
-
-  /* Valores e quantidades marcados como numéricos usam algarismos de largura fixa (colunas alinham). */
-  .tabular-nums {
-    font-variant-numeric: tabular-nums lining-nums;
+    background: var(--c-brand);
+    color: var(--c-on-brand);
   }
 
   /* Foco sempre visível para navegação por teclado. */
@@ -227,33 +228,5 @@
       animation-duration: 0.01ms !important;
       transition-duration: 0.01ms !important;
     }
-  }
-}
-
-@layer components {
-  /* Serifada macia para títulos e números de destaque. */
-  .font-display {
-    font-family: var(--font-display);
-    font-variation-settings: "SOFT" 100;
-    font-variant-numeric: lining-nums;
-  }
-
-  /* Marca-texto: um traço de caneta amarela atrás da palavra. */
-  .marker {
-    background-image: linear-gradient(
-      172deg,
-      transparent 56%,
-      var(--c-marker) 56% 90%,
-      transparent 90%
-    );
-    padding: 0 0.12em;
-    margin: 0 -0.12em;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-  }
-
-  /* Hachura: mesa bloqueada, itens indisponíveis. */
-  .hatch {
-    background-image: repeating-linear-gradient(135deg, transparent 0 7px, var(--c-line) 7px 8px);
   }
 }

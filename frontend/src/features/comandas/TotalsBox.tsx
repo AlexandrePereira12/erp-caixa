@@ -25,7 +25,7 @@ export function TotalsBox({ comanda, busy, actions }: TotalsBoxProps) {
   return (
     <section
       aria-label="Totais da comanda"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-6px_16px_rgba(0,0,0,0.12)] lg:static lg:z-auto lg:rounded-lg lg:border lg:px-4 lg:py-3 lg:shadow-sm"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-6px_16px_rgba(0,0,0,0.12)] lg:static lg:z-auto lg:rounded-xl lg:border lg:px-[1.125rem] lg:py-4 lg:shadow-none"
     >
       <div aria-live="polite" aria-atomic="true">
         <div className="flex min-h-11 items-center justify-between gap-3 lg:min-h-0">
@@ -38,7 +38,7 @@ export function TotalsBox({ comanda, busy, actions }: TotalsBoxProps) {
             )}
           </span>
           <span className="flex items-center gap-1">
-            <span className={`font-display text-3xl font-semibold tabular-nums text-fg ${busy ? "opacity-60" : ""}`}>{formatMoney(t.total)}</span>
+            <span className={`text-3xl font-bold tabular-nums text-fg ${busy ? "opacity-60" : ""}`}>{formatMoney(t.total)}</span>
             {/* Só no celular: no desktop os detalhes ficam sempre abertos e o botão nem existe. */}
             <button
               type="button"
@@ -52,7 +52,7 @@ export function TotalsBox({ comanda, busy, actions }: TotalsBoxProps) {
           </span>
         </div>
 
-        <dl className={`space-y-0.5 pb-1 ${open ? "mt-1 border-t border-dashed border-line-strong/50 pt-2" : "lg:mt-1 lg:border-t lg:border-dashed lg:border-line-strong/50 lg:pt-2"}`}>
+        <dl className={`space-y-0.5 pb-1 ${open ? "mt-1 border-t border-dashed border-line-strong pt-2" : "lg:mt-1 lg:border-t lg:border-dashed lg:border-line-strong/50 lg:pt-2"}`}>
           <div className={lineClass}>
             <dt className="text-muted">Subtotal</dt>
             <dd className="tabular-nums">{formatMoney(t.subtotal)}</dd>

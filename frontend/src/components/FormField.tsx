@@ -26,7 +26,7 @@ export function FormField({ label, error, hint, required, className = "", childr
 
   return (
     <div className={className}>
-      <label htmlFor={id} className="mb-1 block text-sm font-semibold text-fg">
+      <label htmlFor={id} className="mb-1.5 block text-[0.8125rem] font-semibold text-fg">
         {label}
         {required && (
           <span aria-hidden="true" className="ml-0.5 text-danger-text">
@@ -36,12 +36,12 @@ export function FormField({ label, error, hint, required, className = "", childr
       </label>
       {control}
       {hint && (
-        <p id={hintId} className="mt-1 text-xs text-muted">
+        <p id={hintId} className="mt-1.5 text-xs leading-snug text-muted">
           {hint}
         </p>
       )}
       {error && (
-        <p id={errorId} className="mt-1 text-sm text-danger-text">
+        <p id={errorId} className="mt-1.5 text-[0.8125rem] text-danger-text">
           {error}
         </p>
       )}

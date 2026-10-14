@@ -17,10 +17,10 @@ const PRINT_CSS = `
   .print-root table { width: 100%; border-collapse: collapse; }
   .print-root tr { break-inside: avoid; }
 
-  /* Comprovante (recibo e conferência): máquina de escrever, título serifado, valores à direita. */
-  .rc { max-width: 80mm; margin: 0 auto; font-family: "Courier Prime", ui-monospace, Menlo, Consolas, monospace; font-size: 12px; line-height: 1.4; }
-  .rc-title { margin: 0 0 8px; font-family: "Fraunces Variable", Georgia, serif; font-variation-settings: "SOFT" 100; font-size: 1.75em; font-weight: 700; line-height: 1.1; }
-  .rc-stamp { display: inline-block; margin: 0 0 8px; padding: 1px 8px; border: 2px solid #000; border-radius: 3px; font-weight: 700; letter-spacing: 0.08em; transform: rotate(-2deg); }
+  /* Comprovante (recibo e conferência): sem cor, filetes e peso marcam a hierarquia, valores à direita. */
+  .rc { max-width: 80mm; margin: 0 auto; font-family: "Inter Variable", ui-sans-serif, system-ui, Arial, sans-serif; font-size: 12px; line-height: 1.4; font-variant-numeric: tabular-nums; }
+  .rc-title { margin: 0 0 8px; font-size: 1.6em; font-weight: 700; line-height: 1.15; }
+  .rc-stamp { display: inline-block; margin: 0 0 8px; padding: 1px 8px; border: 2px solid #000; border-radius: 3px; font-weight: 700; letter-spacing: 0.08em; }
   .rc-block { margin: 0; padding: 8px 0; }
   header .rc-block { padding: 0 0 10px; border-bottom: 1px dashed #000; }
   .rc-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1em; padding: 1px 0; }

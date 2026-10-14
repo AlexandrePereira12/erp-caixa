@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const APP_NAME = "PDV Restaurante";
+const APP_NAME = "ERP Restaurante";
 
 export function usePageTitle(title: string): void {
   useEffect(() => {

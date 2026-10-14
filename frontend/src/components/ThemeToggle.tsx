@@ -29,7 +29,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
   }
 
   return (
-    <div role="radiogroup" aria-label="Tema" className={`inline-flex rounded-full border border-line-strong/60 bg-surface-2/70 p-0.5 ${className}`}>
+    <div role="radiogroup" aria-label="Tema" className={`inline-flex gap-1 rounded-lg border border-line bg-surface-2 p-[3px] ${className}`}>
       {OPTIONS.map((option, index) => {
         const checked = option.value === current;
         return (
@@ -47,8 +47,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
             tabIndex={checked ? 0 : -1}
             onClick={() => setThemePreference(option.value)}
             onKeyDown={(event) => onKeyDown(event, index)}
-            className={`flex h-7 w-7 items-center justify-center rounded-full transition-colors motion-reduce:transition-none ${
-              checked ? "bg-fg text-page shadow-xs" : "text-muted hover:text-fg"
+            className={`flex h-7 w-7 items-center justify-center rounded-md transition-colors motion-reduce:transition-none ${
+              checked ? "bg-surface text-fg shadow-[0_0_0_1px_var(--c-line-strong)]" : "text-muted hover:text-fg"
             }`}
           >
             <option.icon width={15} height={15} />

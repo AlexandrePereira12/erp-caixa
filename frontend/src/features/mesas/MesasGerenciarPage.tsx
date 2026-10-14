@@ -14,7 +14,7 @@ import { usePageTitle } from "@/lib/usePageTitle";
 import { useMesaMutations, useMesas } from "./api";
 import { MesaFormDialog } from "./MesaFormDialog";
 
-const TONE: Record<string, BadgeTone> = { livre: "success", ocupada: "brand", aguardando_pagamento: "warning", reservada: "neutral", bloqueada: "neutral" };
+const TONE: Record<string, BadgeTone> = { livre: "success", ocupada: "info", aguardando_pagamento: "warning", reservada: "neutral", bloqueada: "neutral" };
 
 type Dialog = { kind: "create" } | { kind: "edit" | "delete"; mesa: Mesa } | null;
 

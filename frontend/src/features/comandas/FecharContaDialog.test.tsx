@@ -16,6 +16,7 @@ function setup(perfil: Parameters<typeof signInAs>[0] = "frente", c = comanda(),
   mock.on("GET /api/v1/produtos", json(200, pageOf([produto()], { limite: 100 })));
   mock.on("GET /api/v1/formas-pagamento", json(200, FORMAS));
   mock.on("GET /api/v1/caixas/atual", json(200, caixa()));
+  mock.on("GET /api/v1/configuracoes/pix", json(200, { pix_copia_e_cola: null, pix_recebedor: null }));
   mock.on("GET /api/v1/pessoas", json(200, pageOf([pessoa()])));
   mock.on("GET /api/v1/pessoas/20/saldo-aberto", json(200, SALDO));
   return mock;
@@ -339,5 +340,70 @@ describe("Fechar conta", () => {
     await user.click(confirm(dialog));
     expect((await within(dialog).findByRole("alert")).textContent).toContain("A comanda #12 está fechada.");
     await waitFor(() => expect(mock.callsTo("GET /api/v1/comandas/12").length).toBeGreaterThan(before));
+  });
+});
+
+/** Nome acessível do QR do Pix: o espaço de formatMoney é não separável e o nome acessível não é normalizado. */
+const qrDe = (valor: string) => ({ name: new RegExp(`^QR Code do Pix de R\\$\\s${valor}$`) });
+const copiarDe = (valor: string) => ({ name: new RegExp(`^Copiar o Pix copia e cola de R\\$\\s${valor}$`) });
+
+const PIX = "00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-4266554400005204000053039865802BR5913Fulano de Tal6008BRASILIA62070503***63041D3D";
+
+describe("Fechar conta: QR Code do Pix", () => {
+  it("pagamento em Pix mostra o QR Code do valor da linha e acompanha o valor digitado", async () => {
+    const mock = setup("frente");
+    mock.on("GET /api/v1/configuracoes/pix", json(200, { pix_copia_e_cola: PIX, pix_recebedor: "Fulano de Tal" }));
+    const { user } = renderApp("/comandas/12");
+    const dialog = await openDialog(user);
+
+    expect(within(dialog).queryByRole("img", { name: /QR Code do Pix/ })).toBeNull();
+    await user.click(await within(dialog).findByRole("button", { name: "Pagar tudo em Pix" }));
+    expect(await within(dialog).findByRole("img", qrDe("19,80"))).toBeTruthy();
+    expect(within(dialog).getByRole("button", copiarDe("19,80"))).toBeTruthy();
+    expect(within(dialog).getByText(/O sistema não confirma o pagamento/)).toBeTruthy();
+
+    const valor = within(linha(dialog, 1)).getByLabelText(/^Valor \(R\$\)/);
+    await user.clear(valor);
+    await user.type(valor, "10");
+    expect(await within(dialog).findByRole("img", qrDe("10,00"))).toBeTruthy();
+    expect(within(dialog).queryByRole("img", qrDe("19,80"))).toBeNull();
+
+    await user.clear(valor);
+    expect(within(dialog).queryByRole("img", { name: /QR Code do Pix/ })).toBeNull();
+  });
+
+  it("outra forma de pagamento não mostra QR Code", async () => {
+    const mock = setup("frente");
+    mock.on("GET /api/v1/configuracoes/pix", json(200, { pix_copia_e_cola: PIX, pix_recebedor: "Fulano de Tal" }));
+    const { user } = renderApp("/comandas/12");
+    const dialog = await openDialog(user);
+
+    await user.click(await within(dialog).findByRole("button", { name: "Pagar tudo em Dinheiro" }));
+    expect(within(dialog).queryByRole("img", { name: /QR Code do Pix/ })).toBeNull();
+  });
+
+  it("sem Pix cadastrado avisa onde cadastrar e a conta fecha normalmente", async () => {
+    const mock = setup("frente");
+    mock.on("POST /api/v1/comandas/12/fechar", json(201, venda()));
+    const { user } = renderApp("/comandas/12");
+    const dialog = await openDialog(user);
+
+    await user.click(await within(dialog).findByRole("button", { name: "Pagar tudo em Pix" }));
+    expect(await within(dialog).findByText(/Nenhum Pix cadastrado/)).toBeTruthy();
+    expect(within(dialog).queryByRole("img", { name: /QR Code do Pix/ })).toBeNull();
+    expect(confirm(dialog).disabled).toBe(false);
+  });
+
+  it("falha ao ler o Pix não atrapalha o fechamento: sem QR Code e sem aviso", async () => {
+    const mock = setup("frente");
+    mock.on("GET /api/v1/configuracoes/pix", json(500, { erro: { codigo: "erro_interno", mensagem: "Falhou." } }));
+    const { user } = renderApp("/comandas/12");
+    const dialog = await openDialog(user);
+
+    await user.click(await within(dialog).findByRole("button", { name: "Pagar tudo em Pix" }));
+    await waitFor(() => expect(mock.callsTo("GET /api/v1/configuracoes/pix").length).toBeGreaterThan(0));
+    expect(within(dialog).queryByRole("img", { name: /QR Code do Pix/ })).toBeNull();
+    expect(within(dialog).queryByText(/Nenhum Pix cadastrado/)).toBeNull();
+    expect(confirm(dialog).disabled).toBe(false);
   });
 });

@@ -10,7 +10,7 @@ type Tone = "neutral" | "danger";
 
 const CARD: Record<Tone, string> = {
   neutral: "border-line bg-surface",
-  danger: "border-danger/35 bg-danger-soft",
+  danger: "border-danger-text bg-danger-soft",
 };
 const VALUE: Record<Tone, string> = {
   neutral: "text-fg",
@@ -19,12 +19,12 @@ const VALUE: Record<Tone, string> = {
 
 function ResumoCard({ label, value, hint, tone = "neutral", attention = false }: { label: string; value: string; hint: ReactNode; tone?: Tone; attention?: boolean }) {
   return (
-    <div className={`min-w-0 rounded-xl border p-4 shadow-sm ${CARD[tone]}`}>
-      <dt className="flex items-center gap-1.5 text-sm font-medium text-muted">
+    <div className={`min-w-0 rounded-xl border px-[1.125rem] py-4 ${CARD[tone]}`}>
+      <dt className="flex items-center gap-1.5 text-[0.8125rem] text-muted">
         {attention && <AlertIcon aria-hidden="true" width={16} height={16} className="shrink-0 text-danger-text" />}
         {label}
       </dt>
-      <dd className={`mt-1 break-words font-display text-2xl font-semibold leading-tight tabular-nums ${VALUE[tone]}`}>{value}</dd>
+      <dd className={`mt-1.5 break-words text-2xl font-bold leading-[1.15] tracking-[-0.01em] tabular-nums ${VALUE[tone]}`}>{value}</dd>
       <dd className="mt-1.5 text-xs text-muted">{hint}</dd>
     </div>
   );

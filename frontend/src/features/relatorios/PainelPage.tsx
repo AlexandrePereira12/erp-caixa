@@ -38,7 +38,7 @@ function Resumo({ data, today }: { data: DashboardOut; today: boolean }) {
   return (
     <>
       <section aria-labelledby={periodId} className="space-y-3">
-        <h2 id={periodId} className="font-display text-xl font-semibold text-fg">
+        <h2 id={periodId} className="text-lg font-semibold text-fg">
           {periodTitle(data.periodo_detalhe, periodo.janela, today)}
         </h2>
         <KpiGrid>
@@ -54,7 +54,7 @@ function Resumo({ data, today }: { data: DashboardOut; today: boolean }) {
       </div>
 
       <section aria-labelledby={nowId} className="space-y-3">
-        <h2 id={nowId} className="font-display text-xl font-semibold text-fg">
+        <h2 id={nowId} className="text-lg font-semibold text-fg">
           Situação de agora
         </h2>
         <KpiGrid>

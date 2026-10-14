@@ -6,6 +6,7 @@ import { formaTipoLabel } from "@/components/pdv/labels";
 import type { FormaPagamento } from "@/components/pdv/types";
 import { formatMoney } from "@/lib/money";
 import type { Linha, LinhaCheck } from "./fechamento";
+import { PixCobranca } from "./PixCobranca";
 
 export interface PagamentoLinhaProps {
   index: number;
@@ -14,12 +15,14 @@ export interface PagamentoLinhaProps {
   formas: FormaPagamento[];
   onChange: (patch: Partial<Linha>) => void;
   onRemove: () => void;
+  /** Pix da empresa (sem valor): string = cadastrado, null = não cadastrado, undefined = ainda não carregou. */
+  pix?: string | null | undefined;
 }
 
 const num = { inputMode: "decimal" as const, autoComplete: "off" };
 
 /** Uma linha de pagamento: forma, valor, valor recebido (dinheiro), parcelas (crédito) e observação. */
-export function PagamentoLinha({ index, linha, check, formas, onChange, onRemove }: PagamentoLinhaProps) {
+export function PagamentoLinha({ index, linha, check, formas, onChange, onRemove, pix }: PagamentoLinhaProps) {
   // Campo vazio ainda não é "erro": o resumo (falta cobrir) e o botão desabilitado já orientam.
   const erros = {
     forma: linha.formaId ? check.erros.forma : undefined,
@@ -65,6 +68,8 @@ export function PagamentoLinha({ index, linha, check, formas, onChange, onRemove
         </p>
       )}
       {tipo === "fiado" && <p className="mt-2 text-xs text-muted">{formaTipoLabel("fiado")}: exige cliente e gera uma conta a receber. Não entra no caixa.</p>}
+      {tipo === "pix" && pix && check.valor && <PixCobranca base={pix} valor={check.valor} />}
+      {tipo === "pix" && pix === null && <p className="mt-2 text-xs text-muted">Nenhum Pix cadastrado: o administrador cadastra o Pix copia e cola em Configurações para o QR Code aparecer aqui.</p>}
 
       <details className="mt-2">
         <summary className="inline-flex min-h-11 cursor-pointer items-center text-sm text-brand-text">Observação do pagamento</summary>

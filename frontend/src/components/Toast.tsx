@@ -19,7 +19,7 @@ const ToastContext = createContext<ToastApi | null>(null);
 const tones: Record<ToastTone, string> = {
   success: "border-l-success-text",
   error: "border-l-danger-text",
-  info: "border-l-accent",
+  info: "border-l-brand-text",
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {

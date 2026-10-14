@@ -17,7 +17,7 @@ export function Pagination({ total, limite, deslocamento, onChange, disabled }: 
   const pages = Math.max(1, Math.ceil(total / limite));
 
   return (
-    <nav aria-label="Paginação" className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-3 text-sm">
+    <nav aria-label="Paginação" className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-3.5 text-[0.8125rem]">
       <p className="text-muted">
         Mostrando {from}–{to} de {total}
       </p>

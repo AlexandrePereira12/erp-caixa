@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 
-export type BadgeTone = "neutral" | "brand" | "success" | "warning" | "danger";
+export type BadgeTone = "neutral" | "brand" | "success" | "warning" | "danger" | "info";
 
 const tones: Record<BadgeTone, string> = {
-  neutral: "bg-surface-2 text-fg border-line-strong/30",
-  brand: "bg-brand-soft text-brand-text border-brand-text/25",
-  success: "bg-success-soft text-success-text border-success-text/25",
-  warning: "bg-warning-soft text-warning-text border-warning-text/30",
-  danger: "bg-danger-soft text-danger-text border-danger-text/25",
+  neutral: "bg-neutral-soft text-neutral-text",
+  brand: "bg-brand-soft text-brand-text",
+  success: "bg-success-soft text-success-text",
+  warning: "bg-warning-soft text-warning-text",
+  danger: "bg-danger-soft text-danger-text",
+  info: "bg-info-soft text-info-text",
 };
 
 export function Badge({ tone = "neutral", children, className = "" }: { tone?: BadgeTone; children: ReactNode; className?: string }) {
-  return <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${tones[tone]} ${className}`}>{children}</span>;
+  return <span className={`inline-flex items-center whitespace-nowrap rounded-sm px-2 py-[3px] text-[0.72rem] font-semibold leading-tight ${tones[tone]} ${className}`}>{children}</span>;
 }

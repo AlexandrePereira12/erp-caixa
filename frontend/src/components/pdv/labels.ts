@@ -14,7 +14,7 @@ export const comandaStatusLabel = (status: string) => pick(COMANDA_STATUS, statu
 export function comandaStatusTone(status: string): BadgeTone {
   switch (status) {
     case "aberta":
-      return "brand";
+      return "info";
     case "aguardando_pagamento":
       return "warning";
     case "fechada":
@@ -71,4 +71,4 @@ export function tituloStatusTone(status: string): BadgeTone {
 
 const CAIXA_STATUS: Record<string, string> = { aberto: "Aberto", fechado: "Fechado" };
 export const caixaStatusLabel = (status: string) => pick(CAIXA_STATUS, status);
-export const caixaStatusTone = (status: string): BadgeTone => (status === "aberto" ? "success" : "neutral");
+export const caixaStatusTone = (status: string): BadgeTone => (status === "aberto" ? "info" : status === "fechado" ? "success" : "neutral");

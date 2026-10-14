@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Card } from "@/components/Card";
+import { Card, PageHeader } from "@/components/Card";
 import { NAV_MODULES, type NavItem } from "@/app/navigation";
 import { useCaixaAtual } from "@/features/caixa/api";
 import { usePermissions } from "@/lib/auth/hooks";
@@ -8,30 +8,16 @@ import { usePageTitle } from "@/lib/usePageTitle";
 
 const dateLong = new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "numeric", month: "long" });
 
-/** Cor de cada módulo no atalho: variedade com os tons do tema, sem significado de estado. */
-const TONES: Record<string, string> = {
-  atendimento: "bg-terra-soft text-terra-text",
-  vendas: "bg-brand-soft text-brand-text",
-  financeiro: "bg-warning-soft text-warning-text",
-  estoque: "bg-brand-soft text-brand-text",
-  cadastros: "bg-terra-soft text-terra-text",
-  relatorios: "bg-warning-soft text-warning-text",
-  administracao: "bg-surface-2 text-fg",
-};
-
-function Shortcut({ item, tone, note }: { item: NavItem; tone: string; note?: { text: string; className: string } | undefined }) {
+function Shortcut({ item, note }: { item: NavItem; note?: { text: string; className: string } | undefined }) {
   return (
     <li>
-      <Link
-        to={item.to}
-        className="group flex min-h-[4.5rem] items-center gap-3.5 rounded-xl border border-line bg-surface p-3.5 shadow-sm transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-      >
-        <span aria-hidden="true" className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${tone}`}>
-          <item.icon width={22} height={22} />
+      <Link to={item.to} className="flex h-full min-w-0 items-center gap-3.5 rounded-xl border border-line bg-surface px-4 py-3.5 transition-colors hover:border-line-strong hover:bg-surface-2 motion-reduce:transition-none">
+        <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-soft font-bold text-brand-text">
+          {item.label.charAt(0)}
         </span>
         <span className="min-w-0">
           <span className="block font-semibold text-fg">{item.label}</span>
-          {note ? <span className={`block text-xs font-medium ${note.className}`}>{note.text}</span> : item.hint && <span className="block text-xs text-muted">{item.hint}</span>}
+          {note ? <span className={`mt-0.5 block text-[0.78rem] leading-snug ${note.className}`}>{note.text}</span> : item.hint && <span className="mt-0.5 block text-[0.78rem] leading-snug text-muted">{item.hint}</span>}
         </span>
       </Link>
     </li>
@@ -52,26 +38,23 @@ export function Home() {
       : { text: "Nenhum caixa aberto: abra para receber pagamentos", className: "text-warning-text" };
   }
 
+  const today = dateLong.format(new Date());
+
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="font-display text-[1.9rem] font-semibold leading-tight text-fg sm:text-[2.4rem]">
-          Olá, <span className="marker">{firstName}</span>
-        </h1>
-        <p className="mt-1.5 text-[0.95rem] text-muted first-letter:uppercase">{dateLong.format(new Date())}</p>
-      </div>
+      <PageHeader title={`Olá, ${firstName}`} description={today.charAt(0).toUpperCase() + today.slice(1)} />
       {modules.length === 0 ? (
-        <Card className="p-6 text-sm text-muted">Seu perfil ainda não tem acesso a nenhum módulo. Fale com o administrador.</Card>
+        <Card className="p-6 text-muted">Seu perfil ainda não tem acesso a nenhum módulo. Fale com o administrador.</Card>
       ) : (
-        <div className="space-y-9">
+        <div className="space-y-6">
           {modules.map(({ module, items }) => (
             <section key={module.id} aria-labelledby={`home-${module.id}`}>
-              <h2 id={`home-${module.id}`} className="mb-3 font-display text-xl font-semibold text-fg">
+              <h2 id={`home-${module.id}`} className="mb-3 border-b border-line pb-2.5 text-lg font-semibold text-fg">
                 {module.label}
               </h2>
-              <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+              <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,17.5rem),1fr))] gap-3">
                 {items.map((item) => (
-                  <Shortcut key={item.to} item={item} tone={TONES[module.id] ?? TONES.administracao!} note={noteOf(item)} />
+                  <Shortcut key={item.to} item={item} note={noteOf(item)} />
                 ))}
               </ul>
             </section>

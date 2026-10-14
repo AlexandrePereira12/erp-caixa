@@ -24,7 +24,7 @@ import { formatDateTime } from "@/lib/format";
 import { formatDecimal } from "@/lib/money";
 import { usePageTitle } from "@/lib/usePageTitle";
 
-const STATUS_TONES: Record<string, BadgeTone> = { aberto: "brand", fechado: "success", cancelado: "neutral" };
+const STATUS_TONES: Record<string, BadgeTone> = { aberto: "info", fechado: "success", cancelado: "neutral" };
 /** Cor da diferença pelo sinal que a API devolveu (só comparação com zero, sem conta). */
 const DIFF_TONES = { "-1": "text-danger-text", 0: "text-muted", 1: "text-success-text" } as const;
 

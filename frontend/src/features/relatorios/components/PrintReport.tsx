@@ -10,7 +10,7 @@ import { usePrint } from "@/components/pdv/PrintArea";
 const SHEET_CSS = `
 @media print {
   .rp { font-size: 12px; }
-  .rp > h1 { margin: 0 0 2px; font-family: "Fraunces Variable", Georgia, serif; font-size: 1.7em; font-weight: 700; }
+  .rp > h1 { margin: 0 0 2px; font-size: 1.7em; font-weight: 700; }
   .rp > p { margin: 0 0 10px; }
   .rp [role="img"], .rp .rp-chart { display: none !important; }
   .rp section { margin: 0 0 14px; break-inside: avoid-page; }

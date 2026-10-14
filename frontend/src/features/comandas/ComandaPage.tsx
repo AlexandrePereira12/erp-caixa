@@ -138,7 +138,7 @@ export function ComandaPage() {
               aria-selected={tab === t}
               aria-controls={`painel-${t}`}
               onClick={() => setTab(t)}
-              className={`min-h-11 rounded-md text-sm font-semibold ${tab === t ? "bg-surface text-fg shadow-sm" : "text-muted hover:text-fg"}`}
+              className={`min-h-11 rounded-md text-sm font-semibold ${tab === t ? "bg-surface text-fg shadow-[0_0_0_1px_var(--c-line-strong)]" : "text-muted hover:text-fg"}`}
             >
               {t === "produtos" ? "Produtos" : `Comanda (${itensAtivos})`}
             </button>
@@ -224,14 +224,14 @@ function Header({
     <Card className="mb-4 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <Link to={can("mesas.listar") ? "/mesas" : "/comandas"} className="mb-1 inline-flex min-h-11 items-center gap-1 text-sm text-brand-text hover:underline">
+          <Link to={can("mesas.listar") ? "/mesas" : "/comandas"} className="mb-1 inline-flex min-h-11 items-center gap-1 text-[0.8125rem] font-semibold text-brand-text hover:underline">
             <ArrowLeftIcon width={16} height={16} />
             {can("mesas.listar") ? "Salão" : "Comandas"}
           </Link>
-          <h1 className="flex flex-wrap items-center gap-2 text-xl font-semibold tracking-tight text-fg sm:text-2xl">
+          <h1 className="flex flex-wrap items-center gap-2 text-[1.375rem] font-bold text-fg">
             Comanda #{comanda.id}
             <span className="text-muted">· {comandaLocal(comanda)}</span>
-            <Badge tone={comandaStatusTone(comanda.status)} className="text-sm">
+            <Badge tone={comandaStatusTone(comanda.status)}>
               {comandaStatusLabel(comanda.status)}
             </Badge>
           </h1>

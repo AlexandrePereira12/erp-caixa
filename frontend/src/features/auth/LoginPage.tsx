@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Navigate, useLocation } from "react-router-dom";
 import { z } from "zod";
 import { AuthShell } from "./AuthShell";
+import { LoginArt } from "./LoginArt";
 import { Alert } from "@/components/Alert";
 import { Button } from "@/components/Button";
 import { Input, PasswordInput } from "@/components/controls";
@@ -59,7 +60,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthShell title="Entrar" description="Acesse com seu e-mail e senha.">
+    <AuthShell title="Entrar" description="Acesse com seu e-mail e senha." art={<LoginArt className="h-full max-h-[min(34rem,46dvh)] w-full" />}>
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         {formError && <Alert tone="danger">{formError}</Alert>}
         <FormField label="E-mail" error={errors.email?.message} required>

@@ -125,16 +125,16 @@ export function ProductPanel({ onAdd }: ProductPanelProps) {
         <>
           <ul aria-label="Lista de produtos" className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-3">
             {items.map((p) => (
-              <li key={p.id} className="relative flex flex-col overflow-hidden rounded-lg border border-line bg-surface shadow-sm">
+              <li key={p.id} className="relative flex flex-col overflow-hidden rounded-xl border border-line bg-surface">
                 <button
                   type="button"
                   onClick={() => quickAdd(p)}
                   aria-label={`Adicionar ${p.nome}, ${formatMoney(p.preco_venda)}`}
                   className="flex min-h-24 flex-1 flex-col items-start gap-1 p-3 text-left transition-colors hover:bg-brand-soft active:bg-brand-soft"
                 >
-                  <span className="line-clamp-2 text-sm font-semibold text-fg">{p.nome}</span>
+                  <span className="line-clamp-2 text-[0.84rem] font-semibold text-fg">{p.nome}</span>
                   <span className="mt-auto flex w-full items-end justify-between gap-2">
-                    <span className="text-base font-semibold tabular-nums text-brand-text">{formatMoney(p.preco_venda)}</span>
+                    <span className="text-base font-bold tabular-nums text-fg">{formatMoney(p.preco_venda)}</span>
                     <span className="text-xs text-muted">/{p.unidade.sigla}</span>
                   </span>
                   {semEstoque(p) && <Badge tone="warning">Sem estoque</Badge>}
@@ -143,7 +143,7 @@ export function ProductPanel({ onAdd }: ProductPanelProps) {
                   type="button"
                   onClick={() => setDetail(p)}
                   aria-label={`Quantidade e observação de ${p.nome}`}
-                  className="flex min-h-11 items-center justify-center gap-1 border-t border-line bg-surface-2 px-2 text-xs font-medium text-fg hover:bg-brand-soft"
+                  className="flex min-h-11 items-center justify-center gap-1 border-t border-line bg-surface-2 px-2 text-[0.78rem] font-semibold text-brand-text hover:bg-brand-soft"
                 >
                   <PlusIcon width={14} height={14} />
                   Qtd. / obs.
@@ -170,7 +170,7 @@ function CategoryChip({ active, onClick, children }: { active: boolean; onClick:
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`min-h-11 shrink-0 rounded-md border px-4 text-sm font-medium transition-colors ${active ? "border-brand bg-brand text-on-brand" : "border-line-strong bg-surface text-fg hover:bg-surface-2"}`}
+      className={`min-h-11 shrink-0 rounded-md border px-4 text-[0.84rem] font-semibold transition-colors ${active ? "border-brand bg-brand text-on-brand" : "border-line-strong bg-surface text-fg hover:bg-surface-2"}`}
     >
       {children}
     </button>
