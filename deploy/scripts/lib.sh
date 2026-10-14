@@ -154,7 +154,8 @@ aguardar_host_no_nginx() { # aguardar_host_no_nginx HOST
 # shellcheck disable=SC2034  # usado por restaurar-empresa.sh, que carrega este arquivo
 TABELAS_APPEND_ONLY=(
   auditoria_log movimento_estoque movimento_caixa caixa_evento comanda_evento
-  titulo_receber_baixa venda venda_item venda_pagamento venda_estorno caixa_conferencia
+  titulo_receber_baixa titulo_pagar_baixa venda venda_item venda_pagamento venda_estorno
+  caixa_conferencia
 )
 
 # Validadores de entrada do operador: nada com metacaractere de shell, sed ou nginx passa.

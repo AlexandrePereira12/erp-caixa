@@ -134,11 +134,13 @@ describe("PeoplePage: permissões", () => {
 
   it("o menu lista Pessoas, Produtos, Estoque e Inventários só conforme as permissões", async () => {
     setup(["pessoas.listar", "estoque.listar"]);
-    renderApp("/pessoas");
+    const { user } = renderApp("/pessoas");
     const nav = await screen.findByRole("navigation", { name: "Principal" });
+    // o módulo da página atual (Cadastros) já vem aberto; o de Estoque é aberto à mão
     expect(within(nav).getByRole("link", { name: "Pessoas" })).toBeTruthy();
-    expect(within(nav).getByRole("link", { name: "Estoque" })).toBeTruthy();
     expect(within(nav).queryByRole("link", { name: "Produtos" })).toBeNull();
+    await user.click(within(nav).getByRole("button", { name: "Estoque" }));
+    expect(within(nav).getByRole("link", { name: "Saldos e movimentos" })).toBeTruthy();
     expect(within(nav).queryByRole("link", { name: "Inventários" })).toBeNull();
   });
 });

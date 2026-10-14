@@ -65,13 +65,31 @@ Cada módulo fica em `backend/src/app/modules/<nome>` e tem a tela correspondent
 | **config** | Configurações da empresa | Fuso horário, taxa de serviço (%) e janela de cancelamento de item. |
 | **people** | Clientes, fornecedores, colaboradores | CPF/CNPJ validado e mascarado para quem não tem permissão de ver. Cadastro rápido no balcão (nome + telefone). Cliente define se aceita fiado e o limite. |
 | **catalog** | Produtos, categorias, unidades, ficha técnica | Tipos: revenda, preparado, insumo, embalagem. Ficha técnica de um nível: vender um prato baixa os insumos. |
-| **inventory** | Estoque, movimentos e inventário | Saldo = soma dos movimentos (nunca editado à mão). Estoque negativo bloqueado, salvo permissão + justificativa. Custo médio ponderado, atualizado a cada entrada. Perdas, ajustes e inventário geram movimentos auditados. |
+| **inventory** | Estoque, movimentos e inventário | Saldo = soma dos movimentos (nunca editado à mão). Estoque negativo bloqueado, salvo permissão + justificativa. Custo médio ponderado, atualizado a cada entrada. A entrada aceita o **fornecedor** (opcional): é o que alimenta o relatório de compras. Perdas, ajustes e inventário geram movimentos auditados. |
 | **tables** | Mesas | Livre, ocupada, aguardando pagamento, reservada, bloqueada. A mesa segue a comanda; só uma comanda em andamento por mesa. |
 | **orders** | Comandas | Tipos: mesa, balcão, retirada, delivery. Preço congelado ao lançar. Cancelar item exige motivo (atendente só o que lançou e dentro de 5 min; depois, gerente). Desconto exige justificativa e respeita o limite do papel (admin 100%, gerente 20%, frente 5%, atendente 0). Transferência de mesa. Todos os valores são calculados no backend. |
 | **cash** | Caixa e formas de pagamento | Um caixa aberto por operador. Sangria e reforço. Fechamento por **conferência cega**: o operador conta cada forma sem ver o esperado; diferença exige justificativa. Reabertura só com permissão e fica auditada. |
 | **sales** | Fechamento da comanda e estorno | Fechar é **uma única transação**: venda, pagamentos, caixa, baixa de estoque, mesa liberada e auditoria. Se algo falha, nada é gravado. Fechamento repetido ou simultâneo gera uma só venda. Pagamento pode ser dividido; dinheiro admite troco; fiado exige permissão e respeita o limite. Estorno cria lançamentos inversos (caixa, estoque, título) sem alterar o histórico. |
 | **finance** | Contas a receber (fiado) | Fiado vira título; baixa parcial ou total entra no caixa de quem recebe. Baixa repetida por reenvio é ignorada (chave de idempotência). |
-| **reports** | Dashboard e relatórios | Faturamento, ticket médio, mais vendidos, formas de pagamento, estoque baixo, relatórios de vendas, caixa, estoque e perdas. Dia, semana e mês seguem o **fuso da empresa**. |
+| **payables** | Contas a pagar | Conta com fornecedor (opcional), categoria de despesa e vencimento. Pagamento parcial ou total, com estorno do pagamento; cancelamento só sem pagamento vigente. "Vencida" é calculada no fuso da empresa (vence hoje ainda é a vencer). Pagar a conta **não mexe no caixa**: é registro financeiro; pagar com dinheiro da gaveta continua sendo a sangria. Pagamento repetido por reenvio é ignorado (chave de idempotência). |
+| **reports** | Painel e relatórios | Painel do período, e relatórios de **vendas** (por dia, forma de pagamento, produto ou operador), **produtos** (receita, custo, margem e curva ABC; produtos sem venda), **compras** (entradas por fornecedor, produto, categoria ou dia), **caixa**, **estoque** e **perdas**. Dia, semana e mês seguem o **fuso da empresa**; venda estornada não conta. |
+
+### Mapa do menu
+
+O menu agrupa as telas em módulos (cada um abre e fecha; o módulo da página atual fica aberto, e a escolha
+é lembrada no navegador) e só mostra o que a pessoa tem permissão de ver:
+
+| Módulo | Submódulos |
+|---|---|
+| Atendimento | Salão, Comandas |
+| Vendas | Caixa, Vendas, Histórico de caixas |
+| Financeiro | Contas a receber, Contas a pagar, Categorias, Formas de pagamento |
+| Estoque | Saldos e movimentos, Inventários |
+| Cadastros | Pessoas, Produtos |
+| Relatórios | Painel, Vendas, Produtos, Compras, Caixa, Estoque, Perdas |
+| Administração | Usuários, Papéis e permissões, Auditoria, Configurações |
+
+O tema (claro, escuro ou o do sistema) se troca no topo da tela e vale para o sistema todo.
 
 ### Regras que valem para o sistema todo
 

@@ -203,14 +203,15 @@ def test_historico_e_saldo_do_cliente(pdv):
 
 
 def test_categorias_financeiras(pdv):
-    cats = pdv.get("/categorias-financeiras").json()
+    # A migration 0005 já semeia as categorias de despesa padrão; a receita é só "Vendas fiado".
+    cats = pdv.get("/categorias-financeiras", tipo="receita").json()
     assert [(c["nome"], c["tipo"]) for c in cats] == [("Vendas fiado", "receita")]
-    nova = pdv.post("/categorias-financeiras", {"nome": "Aluguel", "tipo": "despesa"})
+    nova = pdv.post("/categorias-financeiras", {"nome": "Marketing", "tipo": "despesa"})
     assert nova.status_code == 201
     assert (
-        pdv.post("/categorias-financeiras", {"nome": "aluguel", "tipo": "despesa"}).json()["erro"][
-            "codigo"
-        ]
+        pdv.post("/categorias-financeiras", {"nome": "marketing", "tipo": "despesa"}).json()[
+            "erro"
+        ]["codigo"]
         == "categoria_nome_em_uso"
     )
     assert (

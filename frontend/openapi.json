@@ -342,6 +342,151 @@
         "title": "BaixaOut",
         "type": "object"
       },
+      "BaixaPagarIn": {
+        "properties": {
+          "chave": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 8,
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chave"
+          },
+          "data_pagamento": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Pagamento"
+          },
+          "forma_pagamento_id": {
+            "title": "Forma Pagamento Id",
+            "type": "integer"
+          },
+          "observacao": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observacao"
+          },
+          "valor": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Valor"
+          }
+        },
+        "required": [
+          "valor",
+          "forma_pagamento_id"
+        ],
+        "title": "BaixaPagarIn",
+        "type": "object"
+      },
+      "BaixaPagarOut": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "data_pagamento": {
+            "format": "date",
+            "title": "Data Pagamento",
+            "type": "string"
+          },
+          "estornada": {
+            "title": "Estornada",
+            "type": "boolean"
+          },
+          "estorno_de_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estorno De Id"
+          },
+          "forma": {
+            "title": "Forma",
+            "type": "string"
+          },
+          "forma_pagamento_id": {
+            "title": "Forma Pagamento Id",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "observacao": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observacao"
+          },
+          "usuario_nome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usuario Nome"
+          },
+          "valor": {
+            "title": "Valor",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "valor",
+          "forma_pagamento_id",
+          "forma",
+          "data_pagamento",
+          "estorno_de_id",
+          "estornada",
+          "observacao",
+          "created_at",
+          "usuario_nome"
+        ],
+        "title": "BaixaPagarOut",
+        "type": "object"
+      },
       "CaixaAbertoOut": {
         "properties": {
           "aberto_em": {
@@ -531,6 +676,21 @@
         "title": "CaixaResumoOut",
         "type": "object"
       },
+      "CancelarTituloPagarIn": {
+        "properties": {
+          "motivo": {
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Motivo",
+            "type": "string"
+          }
+        },
+        "required": [
+          "motivo"
+        ],
+        "title": "CancelarTituloPagarIn",
+        "type": "object"
+      },
       "CategoriaEditarIn": {
         "properties": {
           "ativo": {
@@ -657,6 +817,24 @@
           "ativa"
         ],
         "title": "CategoriaFinanceiraOut",
+        "type": "object"
+      },
+      "CategoriaFinanceiraResumo": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "nome": {
+            "title": "Nome",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "nome"
+        ],
+        "title": "CategoriaFinanceiraResumo",
         "type": "object"
       },
       "CategoriaIn": {
@@ -1898,6 +2076,17 @@
             ],
             "title": "Documento"
           },
+          "fornecedor_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fornecedor Id"
+          },
           "justificativa": {
             "anyOf": [
               {
@@ -2005,6 +2194,21 @@
           "estoque_minimo"
         ],
         "title": "EstoqueBaixoOut",
+        "type": "object"
+      },
+      "EstornarBaixaPagarIn": {
+        "properties": {
+          "motivo": {
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Motivo",
+            "type": "string"
+          }
+        },
+        "required": [
+          "motivo"
+        ],
+        "title": "EstornarBaixaPagarIn",
         "type": "object"
       },
       "EstornoIn": {
@@ -2904,6 +3108,63 @@
         "title": "LinhaCaixa",
         "type": "object"
       },
+      "LinhaCompras": {
+        "properties": {
+          "chave": {
+            "title": "Chave",
+            "type": "string"
+          },
+          "entradas_qtd": {
+            "title": "Entradas Qtd",
+            "type": "integer"
+          },
+          "entradas_sem_custo": {
+            "title": "Entradas Sem Custo",
+            "type": "integer"
+          },
+          "quantidade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantidade"
+          },
+          "rotulo": {
+            "title": "Rotulo",
+            "type": "string"
+          },
+          "unidade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unidade"
+          },
+          "valor": {
+            "title": "Valor",
+            "type": "string"
+          }
+        },
+        "required": [
+          "chave",
+          "rotulo",
+          "entradas_qtd",
+          "quantidade",
+          "unidade",
+          "valor",
+          "entradas_sem_custo"
+        ],
+        "title": "LinhaCompras",
+        "type": "object"
+      },
       "LinhaEstoque": {
         "properties": {
           "abaixo_minimo": {
@@ -3005,6 +3266,103 @@
           "ocorrencias"
         ],
         "title": "LinhaPerdas",
+        "type": "object"
+      },
+      "LinhaProdutos": {
+        "properties": {
+          "acumulado_pct": {
+            "title": "Acumulado Pct",
+            "type": "string"
+          },
+          "categoria": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categoria"
+          },
+          "curva": {
+            "enum": [
+              "A",
+              "B",
+              "C"
+            ],
+            "title": "Curva",
+            "type": "string"
+          },
+          "custo": {
+            "title": "Custo",
+            "type": "string"
+          },
+          "margem": {
+            "title": "Margem",
+            "type": "string"
+          },
+          "margem_pct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margem Pct"
+          },
+          "participacao_pct": {
+            "title": "Participacao Pct",
+            "type": "string"
+          },
+          "produto": {
+            "title": "Produto",
+            "type": "string"
+          },
+          "produto_id": {
+            "title": "Produto Id",
+            "type": "integer"
+          },
+          "quantidade": {
+            "title": "Quantidade",
+            "type": "string"
+          },
+          "receita": {
+            "title": "Receita",
+            "type": "string"
+          },
+          "sem_custo": {
+            "title": "Sem Custo",
+            "type": "boolean"
+          },
+          "tipo": {
+            "title": "Tipo",
+            "type": "string"
+          },
+          "unidade": {
+            "title": "Unidade",
+            "type": "string"
+          }
+        },
+        "required": [
+          "produto_id",
+          "produto",
+          "tipo",
+          "categoria",
+          "unidade",
+          "quantidade",
+          "receita",
+          "custo",
+          "margem",
+          "margem_pct",
+          "participacao_pct",
+          "acumulado_pct",
+          "curva",
+          "sem_custo"
+        ],
+        "title": "LinhaProdutos",
         "type": "object"
       },
       "LinhaVendas": {
@@ -3503,6 +3861,16 @@
             ],
             "title": "Documento"
           },
+          "fornecedor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PessoaResumo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "id": {
             "title": "Id",
             "type": "integer"
@@ -3594,6 +3962,7 @@
           "origem_id",
           "documento",
           "justificativa",
+          "fornecedor",
           "ocorrido_em",
           "usuario_nome"
         ],
@@ -3996,6 +4365,37 @@
           "deslocamento"
         ],
         "title": "Page[TituloOut]",
+        "type": "object"
+      },
+      "Page_TituloPagarOut_": {
+        "properties": {
+          "deslocamento": {
+            "title": "Deslocamento",
+            "type": "integer"
+          },
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/TituloPagarOut"
+            },
+            "title": "Itens",
+            "type": "array"
+          },
+          "limite": {
+            "title": "Limite",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "itens",
+          "total",
+          "limite",
+          "deslocamento"
+        ],
+        "title": "Page[TituloPagarOut]",
         "type": "object"
       },
       "Page_UsuarioOut_": {
@@ -5170,6 +5570,58 @@
         "title": "ProdutoOut",
         "type": "object"
       },
+      "ProdutoSemVendaOut": {
+        "properties": {
+          "categoria": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categoria"
+          },
+          "produto": {
+            "title": "Produto",
+            "type": "string"
+          },
+          "produto_id": {
+            "title": "Produto Id",
+            "type": "integer"
+          },
+          "saldo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Saldo"
+          },
+          "tipo": {
+            "title": "Tipo",
+            "type": "string"
+          },
+          "unidade": {
+            "title": "Unidade",
+            "type": "string"
+          }
+        },
+        "required": [
+          "produto_id",
+          "produto",
+          "tipo",
+          "categoria",
+          "unidade",
+          "saldo"
+        ],
+        "title": "ProdutoSemVendaOut",
+        "type": "object"
+      },
       "ReaberturaIn": {
         "properties": {
           "justificativa": {
@@ -5238,6 +5690,69 @@
         "title": "RelatorioCaixaOut",
         "type": "object"
       },
+      "RelatorioComprasOut": {
+        "properties": {
+          "agrupado_por": {
+            "enum": [
+              "dia",
+              "fornecedor",
+              "produto",
+              "categoria"
+            ],
+            "title": "Agrupado Por",
+            "type": "string"
+          },
+          "janela": {
+            "$ref": "#/components/schemas/JanelaOut"
+          },
+          "linhas": {
+            "items": {
+              "$ref": "#/components/schemas/LinhaCompras"
+            },
+            "title": "Linhas",
+            "type": "array"
+          },
+          "resumo": {
+            "$ref": "#/components/schemas/RelatorioComprasResumo"
+          }
+        },
+        "required": [
+          "janela",
+          "agrupado_por",
+          "resumo",
+          "linhas"
+        ],
+        "title": "RelatorioComprasOut",
+        "type": "object"
+      },
+      "RelatorioComprasResumo": {
+        "properties": {
+          "entradas_sem_custo": {
+            "title": "Entradas Sem Custo",
+            "type": "integer"
+          },
+          "itens": {
+            "title": "Itens",
+            "type": "integer"
+          },
+          "quantidade_entradas": {
+            "title": "Quantidade Entradas",
+            "type": "integer"
+          },
+          "valor_total": {
+            "title": "Valor Total",
+            "type": "string"
+          }
+        },
+        "required": [
+          "valor_total",
+          "quantidade_entradas",
+          "itens",
+          "entradas_sem_custo"
+        ],
+        "title": "RelatorioComprasResumo",
+        "type": "object"
+      },
       "RelatorioEstoqueOut": {
         "properties": {
           "abaixo_minimo_qtd": {
@@ -5297,6 +5812,98 @@
           "ocorrencias"
         ],
         "title": "RelatorioPerdasOut",
+        "type": "object"
+      },
+      "RelatorioProdutosOut": {
+        "properties": {
+          "janela": {
+            "$ref": "#/components/schemas/JanelaOut"
+          },
+          "linhas": {
+            "items": {
+              "$ref": "#/components/schemas/LinhaProdutos"
+            },
+            "title": "Linhas",
+            "type": "array"
+          },
+          "ordenado_por": {
+            "enum": [
+              "receita",
+              "quantidade",
+              "margem"
+            ],
+            "title": "Ordenado Por",
+            "type": "string"
+          },
+          "resumo": {
+            "$ref": "#/components/schemas/RelatorioProdutosResumo"
+          },
+          "sem_venda": {
+            "items": {
+              "$ref": "#/components/schemas/ProdutoSemVendaOut"
+            },
+            "title": "Sem Venda",
+            "type": "array"
+          }
+        },
+        "required": [
+          "janela",
+          "ordenado_por",
+          "resumo",
+          "linhas",
+          "sem_venda"
+        ],
+        "title": "RelatorioProdutosOut",
+        "type": "object"
+      },
+      "RelatorioProdutosResumo": {
+        "properties": {
+          "custo_total": {
+            "title": "Custo Total",
+            "type": "string"
+          },
+          "margem_pct_total": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margem Pct Total"
+          },
+          "margem_total": {
+            "title": "Margem Total",
+            "type": "string"
+          },
+          "produtos_sem_custo": {
+            "title": "Produtos Sem Custo",
+            "type": "integer"
+          },
+          "produtos_vendidos": {
+            "title": "Produtos Vendidos",
+            "type": "integer"
+          },
+          "receita_total": {
+            "title": "Receita Total",
+            "type": "string"
+          },
+          "sem_venda_qtd": {
+            "title": "Sem Venda Qtd",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "receita_total",
+          "custo_total",
+          "margem_total",
+          "margem_pct_total",
+          "produtos_vendidos",
+          "produtos_sem_custo",
+          "sem_venda_qtd"
+        ],
+        "title": "RelatorioProdutosResumo",
         "type": "object"
       },
       "RelatorioVendasOut": {
@@ -5379,6 +5986,72 @@
           "estornos_total"
         ],
         "title": "RelatorioVendasResumo",
+        "type": "object"
+      },
+      "ResumoPagarOut": {
+        "properties": {
+          "a_vencer_7_dias": {
+            "title": "A Vencer 7 Dias",
+            "type": "string"
+          },
+          "a_vencer_7_dias_qtd": {
+            "title": "A Vencer 7 Dias Qtd",
+            "type": "integer"
+          },
+          "data_referencia": {
+            "format": "date",
+            "title": "Data Referencia",
+            "type": "string"
+          },
+          "em_aberto": {
+            "title": "Em Aberto",
+            "type": "string"
+          },
+          "em_aberto_qtd": {
+            "title": "Em Aberto Qtd",
+            "type": "integer"
+          },
+          "mes_ate": {
+            "format": "date",
+            "title": "Mes Ate",
+            "type": "string"
+          },
+          "mes_de": {
+            "format": "date",
+            "title": "Mes De",
+            "type": "string"
+          },
+          "pago_no_mes": {
+            "title": "Pago No Mes",
+            "type": "string"
+          },
+          "pago_no_mes_qtd": {
+            "title": "Pago No Mes Qtd",
+            "type": "integer"
+          },
+          "vencido": {
+            "title": "Vencido",
+            "type": "string"
+          },
+          "vencido_qtd": {
+            "title": "Vencido Qtd",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "data_referencia",
+          "em_aberto",
+          "em_aberto_qtd",
+          "vencido",
+          "vencido_qtd",
+          "a_vencer_7_dias",
+          "a_vencer_7_dias_qtd",
+          "pago_no_mes",
+          "pago_no_mes_qtd",
+          "mes_de",
+          "mes_ate"
+        ],
+        "title": "ResumoPagarOut",
         "type": "object"
       },
       "SaldoAbertoOut": {
@@ -5598,6 +6271,489 @@
           "baixas"
         ],
         "title": "TituloOut",
+        "type": "object"
+      },
+      "TituloPagarDetalheOut": {
+        "properties": {
+          "baixas": {
+            "items": {
+              "$ref": "#/components/schemas/BaixaPagarOut"
+            },
+            "title": "Baixas",
+            "type": "array"
+          },
+          "cancelado_motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelado Motivo"
+          },
+          "categoria": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CategoriaFinanceiraResumo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "descricao": {
+            "title": "Descricao",
+            "type": "string"
+          },
+          "dias_para_vencer": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dias Para Vencer"
+          },
+          "documento": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documento"
+          },
+          "fornecedor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PessoaResumo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "observacao": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observacao"
+          },
+          "pago_em": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pago Em"
+          },
+          "saldo": {
+            "title": "Saldo",
+            "type": "string"
+          },
+          "situacao": {
+            "enum": [
+              "a_vencer",
+              "vencido",
+              "pago",
+              "cancelado"
+            ],
+            "title": "Situacao",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "aberto",
+              "pago",
+              "cancelado"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "valor_original": {
+            "title": "Valor Original",
+            "type": "string"
+          },
+          "valor_pago": {
+            "title": "Valor Pago",
+            "type": "string"
+          },
+          "vencimento": {
+            "format": "date",
+            "title": "Vencimento",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "fornecedor",
+          "categoria",
+          "descricao",
+          "documento",
+          "observacao",
+          "valor_original",
+          "valor_pago",
+          "saldo",
+          "vencimento",
+          "status",
+          "situacao",
+          "dias_para_vencer",
+          "pago_em",
+          "cancelado_motivo",
+          "created_at",
+          "baixas"
+        ],
+        "title": "TituloPagarDetalheOut",
+        "type": "object"
+      },
+      "TituloPagarEditarIn": {
+        "description": "Só o que for enviado muda; enviar null limpa fornecedor, categoria, documento e observação.\nO valor só muda enquanto o título não tem nenhuma baixa (nem estornada).",
+        "properties": {
+          "categoria_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categoria Id"
+          },
+          "descricao": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Descricao"
+          },
+          "documento": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documento"
+          },
+          "observacao": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observacao"
+          },
+          "pessoa_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pessoa Id"
+          },
+          "valor_original": {
+            "anyOf": [
+              {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "gt": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valor Original"
+          },
+          "vencimento": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vencimento"
+          }
+        },
+        "title": "TituloPagarEditarIn",
+        "type": "object"
+      },
+      "TituloPagarIn": {
+        "properties": {
+          "categoria_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categoria Id"
+          },
+          "descricao": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Descricao",
+            "type": "string"
+          },
+          "documento": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documento"
+          },
+          "observacao": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observacao"
+          },
+          "pessoa_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pessoa Id"
+          },
+          "valor_original": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Valor Original"
+          },
+          "vencimento": {
+            "format": "date",
+            "title": "Vencimento",
+            "type": "string"
+          }
+        },
+        "required": [
+          "descricao",
+          "valor_original",
+          "vencimento"
+        ],
+        "title": "TituloPagarIn",
+        "type": "object"
+      },
+      "TituloPagarOut": {
+        "properties": {
+          "cancelado_motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelado Motivo"
+          },
+          "categoria": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CategoriaFinanceiraResumo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "descricao": {
+            "title": "Descricao",
+            "type": "string"
+          },
+          "dias_para_vencer": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dias Para Vencer"
+          },
+          "documento": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Documento"
+          },
+          "fornecedor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PessoaResumo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "observacao": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observacao"
+          },
+          "pago_em": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pago Em"
+          },
+          "saldo": {
+            "title": "Saldo",
+            "type": "string"
+          },
+          "situacao": {
+            "enum": [
+              "a_vencer",
+              "vencido",
+              "pago",
+              "cancelado"
+            ],
+            "title": "Situacao",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "aberto",
+              "pago",
+              "cancelado"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "valor_original": {
+            "title": "Valor Original",
+            "type": "string"
+          },
+          "valor_pago": {
+            "title": "Valor Pago",
+            "type": "string"
+          },
+          "vencimento": {
+            "format": "date",
+            "title": "Vencimento",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "fornecedor",
+          "categoria",
+          "descricao",
+          "documento",
+          "observacao",
+          "valor_original",
+          "valor_pago",
+          "saldo",
+          "vencimento",
+          "status",
+          "situacao",
+          "dias_para_vencer",
+          "pago_em",
+          "cancelado_motivo",
+          "created_at"
+        ],
+        "title": "TituloPagarOut",
         "type": "object"
       },
       "TokenOut": {
@@ -10315,6 +11471,851 @@
         "summary": "Editar",
         "tags": [
           "configuracoes"
+        ]
+      }
+    },
+    "/api/v1/contas-pagar": {
+      "get": {
+        "operationId": "listar_api_v1_contas_pagar_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "situacao",
+            "required": false,
+            "schema": {
+              "default": "todos",
+              "enum": [
+                "todos",
+                "aberto",
+                "vencido",
+                "a_vencer",
+                "pago",
+                "cancelado"
+              ],
+              "title": "Situacao",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "pessoa_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pessoa Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "categoria_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Categoria Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "vencimento_de",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vencimento De"
+            }
+          },
+          {
+            "in": "query",
+            "name": "vencimento_ate",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vencimento Ate"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limite",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "deslocamento",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "maximum": 10000000,
+              "minimum": 0,
+              "title": "Deslocamento",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_TituloPagarOut_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Listar",
+        "tags": [
+          "contas-pagar"
+        ]
+      },
+      "post": {
+        "operationId": "criar_api_v1_contas_pagar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TituloPagarIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TituloPagarDetalheOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Criar",
+        "tags": [
+          "contas-pagar"
+        ]
+      }
+    },
+    "/api/v1/contas-pagar/resumo": {
+      "get": {
+        "operationId": "resumo_api_v1_contas_pagar_resumo_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumoPagarOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Resumo",
+        "tags": [
+          "contas-pagar"
+        ]
+      }
+    },
+    "/api/v1/contas-pagar/{titulo_id}": {
+      "get": {
+        "operationId": "obter_api_v1_contas_pagar__titulo_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "titulo_id",
+            "required": true,
+            "schema": {
+              "title": "Titulo Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TituloPagarDetalheOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Obter",
+        "tags": [
+          "contas-pagar"
+        ]
+      },
+      "patch": {
+        "operationId": "editar_api_v1_contas_pagar__titulo_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "titulo_id",
+            "required": true,
+            "schema": {
+              "title": "Titulo Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TituloPagarEditarIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TituloPagarDetalheOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Editar",
+        "tags": [
+          "contas-pagar"
+        ]
+      }
+    },
+    "/api/v1/contas-pagar/{titulo_id}/baixas": {
+      "post": {
+        "operationId": "baixar_api_v1_contas_pagar__titulo_id__baixas_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "titulo_id",
+            "required": true,
+            "schema": {
+              "title": "Titulo Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BaixaPagarIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TituloPagarDetalheOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Baixar",
+        "tags": [
+          "contas-pagar"
+        ]
+      }
+    },
+    "/api/v1/contas-pagar/{titulo_id}/baixas/{baixa_id}/estornar": {
+      "post": {
+        "operationId": "estornar_baixa_api_v1_contas_pagar__titulo_id__baixas__baixa_id__estornar_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "titulo_id",
+            "required": true,
+            "schema": {
+              "title": "Titulo Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "baixa_id",
+            "required": true,
+            "schema": {
+              "title": "Baixa Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstornarBaixaPagarIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TituloPagarDetalheOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Estornar Baixa",
+        "tags": [
+          "contas-pagar"
+        ]
+      }
+    },
+    "/api/v1/contas-pagar/{titulo_id}/cancelar": {
+      "post": {
+        "operationId": "cancelar_api_v1_contas_pagar__titulo_id__cancelar_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "titulo_id",
+            "required": true,
+            "schema": {
+              "title": "Titulo Id",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelarTituloPagarIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TituloPagarDetalheOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Cancelar",
+        "tags": [
+          "contas-pagar"
         ]
       }
     },
@@ -15131,6 +17132,150 @@
         ]
       }
     },
+    "/api/v1/relatorios/compras": {
+      "get": {
+        "operationId": "compras_api_v1_relatorios_compras_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "de",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "De"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ate",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ate"
+            }
+          },
+          {
+            "in": "query",
+            "name": "fornecedor_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Fornecedor Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "agrupar",
+            "required": false,
+            "schema": {
+              "default": "dia",
+              "enum": [
+                "dia",
+                "fornecedor",
+                "produto",
+                "categoria"
+              ],
+              "title": "Agrupar",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelatorioComprasOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Compras",
+        "tags": [
+          "relatorios"
+        ]
+      }
+    },
     "/api/v1/relatorios/estoque": {
       "get": {
         "operationId": "estoque_api_v1_relatorios_estoque_get",
@@ -15370,6 +17515,183 @@
           }
         ],
         "summary": "Perdas",
+        "tags": [
+          "relatorios"
+        ]
+      }
+    },
+    "/api/v1/relatorios/produtos": {
+      "get": {
+        "operationId": "produtos_api_v1_relatorios_produtos_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "de",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "De"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ate",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ate"
+            }
+          },
+          {
+            "in": "query",
+            "name": "categoria_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Categoria Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tipo",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "revenda",
+                    "preparado",
+                    "insumo",
+                    "embalagem"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tipo"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ordenar",
+            "required": false,
+            "schema": {
+              "default": "receita",
+              "enum": [
+                "receita",
+                "quantidade",
+                "margem"
+              ],
+              "title": "Ordenar",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limite",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limite",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RelatorioProdutosOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Produtos",
         "tags": [
           "relatorios"
         ]

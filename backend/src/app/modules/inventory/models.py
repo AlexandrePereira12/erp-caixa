@@ -68,6 +68,12 @@ class MovimentoEstoque(Base):
     origem_id: Mapped[int | None] = mapped_column(BigInteger)
     documento: Mapped[str | None] = mapped_column(String(60))
     justificativa: Mapped[str | None] = mapped_column(Text)
+    # Só em entradas (compras), e opcional: entrada sem nota/fornecedor continua válida. Sem
+    # relationship de propósito: o nome vem por JOIN explícito nas consultas (Pessoa carrega
+    # coleções em cascata e encareceria todo movimento lido).
+    fornecedor_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("pessoa.id"), index=True
+    )
     ocorrido_em: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

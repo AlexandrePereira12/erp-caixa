@@ -170,3 +170,86 @@ class RelatorioPerdasOut(BaseModel):
     linhas: list[LinhaPerdas]
     custo_total: Dinheiro
     ocorrencias: int
+
+
+# --- relatório de compras -------------------------------------------------------------------
+
+AgrupamentoCompras = Literal["dia", "fornecedor", "produto", "categoria"]
+
+
+class RelatorioComprasResumo(BaseModel):
+    # Σ de quantidade × custo unitário congelado em cada entrada (entrada sem custo conta 0).
+    valor_total: Dinheiro
+    quantidade_entradas: int  # nº de movimentos de entrada (unidades diferentes não se somam)
+    itens: int  # produtos distintos comprados
+    entradas_sem_custo: int  # entradas sem custo informado: valem 0 no total e vêm sinalizadas
+
+
+class LinhaCompras(BaseModel):
+    chave: str
+    rotulo: str
+    entradas_qtd: int
+    # Só no agrupamento por produto (em outros, unidades diferentes não fazem sentido somadas).
+    quantidade: Quantidade | None
+    unidade: str | None
+    valor: Dinheiro
+    entradas_sem_custo: int
+
+
+class RelatorioComprasOut(BaseModel):
+    janela: JanelaOut
+    agrupado_por: AgrupamentoCompras
+    resumo: RelatorioComprasResumo
+    linhas: list[LinhaCompras]  # do maior para o menor valor (por dia: cronológico)
+
+
+# --- relatório de produtos ------------------------------------------------------------------
+
+OrdemProdutos = Literal["receita", "quantidade", "margem"]
+CurvaAbc = Literal["A", "B", "C"]
+Percentual = Dinheiro  # percentual com 2 casas (string no JSON)
+
+
+class LinhaProdutos(BaseModel):
+    produto_id: int
+    produto: str
+    tipo: str
+    categoria: str | None
+    unidade: str
+    quantidade: Quantidade
+    receita: Dinheiro  # Σ do total dos itens (antes de descontos e taxa de serviço da comanda)
+    custo: Dinheiro  # quantidade × custo congelado no movimento de estoque da venda
+    margem: Dinheiro  # receita - custo
+    margem_pct: Percentual | None  # None quando a receita é zero
+    participacao_pct: Percentual  # fatia da receita total do período
+    acumulado_pct: Percentual  # participação acumulada na ordem da curva (maior receita primeiro)
+    curva: CurvaAbc
+    # Custo zero (sem custo informado, sem ficha nem controle de estoque): a margem vem cheia.
+    sem_custo: bool
+
+
+class RelatorioProdutosResumo(BaseModel):
+    receita_total: Dinheiro
+    custo_total: Dinheiro
+    margem_total: Dinheiro
+    margem_pct_total: Percentual | None
+    produtos_vendidos: int
+    produtos_sem_custo: int
+    sem_venda_qtd: int
+
+
+class ProdutoSemVendaOut(BaseModel):
+    produto_id: int
+    produto: str
+    tipo: str
+    categoria: str | None
+    unidade: str
+    saldo: Quantidade | None  # None quando o produto não controla estoque
+
+
+class RelatorioProdutosOut(BaseModel):
+    janela: JanelaOut
+    ordenado_por: OrdemProdutos
+    resumo: RelatorioProdutosResumo
+    linhas: list[LinhaProdutos]
+    sem_venda: list[ProdutoSemVendaOut]

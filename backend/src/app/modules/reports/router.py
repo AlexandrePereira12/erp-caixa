@@ -9,11 +9,15 @@ from app.core.deps import AuthContext, exigir_permissao
 from app.modules.catalog.schemas import TipoProduto
 from app.modules.reports import service
 from app.modules.reports.schemas import (
+    AgrupamentoCompras,
     DashboardOut,
+    OrdemProdutos,
     Periodo,
     RelatorioCaixaOut,
+    RelatorioComprasOut,
     RelatorioEstoqueOut,
     RelatorioPerdasOut,
+    RelatorioProdutosOut,
     RelatorioVendasOut,
 )
 
@@ -73,3 +77,29 @@ def perdas(
     _: AuthContext = Depends(exigir_permissao("relatorios.perdas")),
 ) -> RelatorioPerdasOut:
     return service.relatorio_perdas(db, de, ate)
+
+
+@router.get("/relatorios/compras", response_model=RelatorioComprasOut)
+def compras(
+    de: date | None = None,
+    ate: date | None = None,
+    fornecedor_id: int | None = None,
+    agrupar: AgrupamentoCompras = "dia",
+    db: Session = Depends(get_db),
+    _: AuthContext = Depends(exigir_permissao("relatorios.compras")),
+) -> RelatorioComprasOut:
+    return service.relatorio_compras(db, de, ate, fornecedor_id, agrupar)
+
+
+@router.get("/relatorios/produtos", response_model=RelatorioProdutosOut)
+def produtos(
+    de: date | None = None,
+    ate: date | None = None,
+    categoria_id: int | None = None,
+    tipo: TipoProduto | None = None,
+    ordenar: OrdemProdutos = "receita",
+    limite: int = Query(100, ge=1, le=500),
+    db: Session = Depends(get_db),
+    _: AuthContext = Depends(exigir_permissao("relatorios.produtos")),
+) -> RelatorioProdutosOut:
+    return service.relatorio_produtos(db, de, ate, categoria_id, tipo, ordenar, limite)

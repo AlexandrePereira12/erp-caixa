@@ -51,6 +51,23 @@ def obter(db: Session, pessoa_id: int) -> Pessoa:
     return _obter(db, pessoa_id)
 
 
+def exigir_fornecedor(db: Session, pessoa_id: int) -> Pessoa:
+    """Pessoa existente, ativa e com o papel fornecedor (compras e contas a pagar). 422, e não
+    404, porque o id vem no corpo de outra operação: o recurso pedido é o lançamento."""
+    p = db.get(Pessoa, pessoa_id)
+    if p is None or p.deleted_at is not None:
+        raise AppError(422, "fornecedor_invalido", "Fornecedor não encontrado.")
+    if not p.ativo:
+        raise AppError(422, "fornecedor_invalido", f"{p.nome} está inativo(a) no cadastro.")
+    if "fornecedor" not in p.papeis:
+        raise AppError(
+            422,
+            "fornecedor_invalido",
+            f"{p.nome} não tem o papel de fornecedor: ajuste o cadastro da pessoa.",
+        )
+    return p
+
+
 def _documento(valor: str | None, tipo: str) -> str | None:
     if valor is None or not valor.strip():
         return None

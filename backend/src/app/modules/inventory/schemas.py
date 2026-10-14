@@ -4,12 +4,15 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.core.money import Custo, Dinheiro, Quantidade
+from app.modules.finance.schemas import PessoaResumo
 
 
 class EntradaIn(BaseModel):
     produto_id: int
     quantidade: Quantidade = Field(gt=0)
     custo_unitario: Custo | None = Field(default=None, ge=0)
+    # Fornecedor da compra (pessoa ativa com o papel fornecedor); opcional.
+    fornecedor_id: int | None = None
     documento: str | None = Field(default=None, max_length=60)
     justificativa: str | None = Field(default=None, max_length=500)
 
@@ -36,6 +39,8 @@ class MovimentoOut(BaseModel):
     origem_id: int | None
     documento: str | None
     justificativa: str | None
+    # Só nas entradas lançadas com fornecedor.
+    fornecedor: PessoaResumo | None
     ocorrido_em: datetime
     usuario_nome: str | None
 

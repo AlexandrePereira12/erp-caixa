@@ -140,11 +140,13 @@ sanidade "${SLUG}_db" "$ADMIN" "$DB" completo
 
 # O role da API não pode ter UPDATE/DELETE em nenhuma tabela de histórico depois da restauração.
 export PGPASSWORD="$APP_PW"
+# Consulta o privilégio de fato: um UPDATE de teste em coluna `id GENERATED ALWAYS` falha por outro
+# motivo antes de checar permissão, o que faria esta guarda passar sempre.
 for t in "${TABELAS_APPEND_ONLY[@]}"; do
-  if docker exec -e PGPASSWORD "${SLUG}_db" psql -h 127.0.0.1 -U "$APP" -d "$DB" -qAt \
-       -c "UPDATE \"$t\" SET id = id WHERE false" >/dev/null 2>&1; then
-    die "role $APP consegue UPDATE em $t após a restauração (privilégios divergentes)"
-  fi
+  priv="$(docker exec -e PGPASSWORD "${SLUG}_db" psql -h 127.0.0.1 -U "$APP" -d "$DB" -qAt \
+    -c "SELECT has_table_privilege(current_user, 'public.$t', 'UPDATE') OR has_table_privilege(current_user, 'public.$t', 'DELETE') OR has_table_privilege(current_user, 'public.$t', 'TRUNCATE')")" \
+    || die "não consegui consultar os privilégios de $t como $APP"
+  [[ "$priv" == "f" ]] || die "role $APP tem UPDATE/DELETE/TRUNCATE em $t após a restauração (privilégios divergentes)"
 done
 unset PGPASSWORD
 

@@ -74,11 +74,18 @@ PERMISSOES: tuple[Perm, ...] = (
     Perm("financeiro.listar", "Consultar contas a receber e saldo de clientes"),
     Perm("financeiro.baixar", "Registrar recebimento de contas a receber"),
     Perm("financeiro.categorias", "Gerenciar categorias financeiras"),
+    Perm("contas_pagar.listar", "Consultar contas a pagar e o resumo de vencimentos"),
+    Perm("contas_pagar.criar", "Lançar contas a pagar"),
+    Perm("contas_pagar.editar", "Editar contas a pagar"),
+    Perm("contas_pagar.baixar", "Registrar pagamentos de contas a pagar"),
+    Perm("contas_pagar.cancelar", "Cancelar contas a pagar e estornar pagamentos"),
     Perm("dashboard.ver", "Ver o dashboard de gestão"),
     Perm("relatorios.vendas", "Consultar o relatório de vendas"),
     Perm("relatorios.caixa", "Consultar o relatório de caixa"),
     Perm("relatorios.estoque", "Consultar o relatório de estoque"),
     Perm("relatorios.perdas", "Consultar o relatório de perdas"),
+    Perm("relatorios.compras", "Consultar o relatório de compras"),
+    Perm("relatorios.produtos", "Consultar o relatório de produtos (vendas, margem e curva ABC)"),
 )
 
 ADMINISTRADOR = "Administrador"

@@ -23,6 +23,7 @@ from app.modules.finance.schemas import (
     SaldoAbertoOut,
     TituloOut,
 )
+from app.modules.payables.models import TituloPagar
 from app.modules.people.models import Pessoa
 from app.modules.sales.models import Venda, VendaPagamento
 from app.modules.users.models import Usuario
@@ -427,6 +428,12 @@ def excluir_categoria(db: Session, auth: AuthContext, categoria_id: int) -> None
     ):
         raise conflito(
             "categoria_em_uso", "Há contas a receber nesta categoria: desative-a em vez de excluir."
+        )
+    if db.scalar(
+        select(func.count()).select_from(TituloPagar).where(TituloPagar.categoria_id == c.id)
+    ):
+        raise conflito(
+            "categoria_em_uso", "Há contas a pagar nesta categoria: desative-a em vez de excluir."
         )
     antes = snapshot(c)
     c.deleted_at, c.deleted_by = datetime.now(UTC), auth.usuario.id

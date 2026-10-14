@@ -84,6 +84,7 @@
   --c-brand-soft: #e0f0e3;
   --c-accent: #f2b32e;
   --c-on-accent: #2a2318;
+  --c-marker: rgb(242 179 46 / 0.7);
   --c-terra: #c4532f;
   --c-terra-text: #a63d21;
   --c-terra-soft: #fbe4da;
@@ -122,6 +123,7 @@
   --c-brand-soft: #1a3326;
   --c-accent: #f2b32e;
   --c-on-accent: #2a2318;
+  --c-marker: rgb(242 179 46 / 0.38);
   --c-terra: #d9663f;
   --c-terra-text: #f2a58b;
   --c-terra-soft: #3a1f17;
@@ -160,6 +162,7 @@
     --c-brand-soft: #1a3326;
     --c-accent: #f2b32e;
     --c-on-accent: #2a2318;
+    --c-marker: rgb(242 179 46 / 0.38);
     --c-terra: #d9663f;
     --c-terra-text: #f2a58b;
     --c-terra-soft: #3a1f17;
@@ -193,6 +196,12 @@
     font-size: 0.9375rem;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
+  }
+
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-variation-settings: "SOFT" 100;
   }
 
   ::selection {
@@ -234,7 +243,7 @@
     background-image: linear-gradient(
       172deg,
       transparent 56%,
-      color-mix(in srgb, var(--c-accent) 70%, transparent) 56% 90%,
+      var(--c-marker) 56% 90%,
       transparent 90%
     );
     padding: 0 0.12em;

@@ -100,8 +100,9 @@ export function MovementsTab() {
       label: "Detalhes",
       header: "Documento / justificativa",
       cell: (m) =>
-        m.documento || m.justificativa ? (
+        m.documento || m.justificativa || m.fornecedor ? (
           <div className="min-w-40 max-w-xs">
+            {m.fornecedor && <p className="text-xs text-muted">Fornecedor: {m.fornecedor.nome}</p>}
             {m.documento && <p className="text-xs text-muted">Doc.: {m.documento}</p>}
             {m.justificativa && <p>{m.justificativa}</p>}
           </div>

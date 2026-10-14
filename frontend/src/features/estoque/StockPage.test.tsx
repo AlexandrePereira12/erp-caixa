@@ -79,6 +79,13 @@ describe("StockPage: saldos", () => {
 });
 
 describe("StockPage: movimentos", () => {
+  it("compra com fornecedor mostra o nome do fornecedor nos detalhes", async () => {
+    const mock = setup();
+    mock.on("GET /api/v1/estoque/movimentos", json(200, page([movimento({ fornecedor: { id: 21, nome: "Distribuidora Boa Mesa Ltda" } })])));
+    renderApp("/estoque?aba=movimentos");
+    expect(await screen.findByText("Fornecedor: Distribuidora Boa Mesa Ltda")).toBeTruthy();
+  });
+
   it("troca de aba pelo teclado e mostra tipo, quantidade com sinal, saldo após, usuário, origem e justificativa", async () => {
     const mock = setup();
     const { user, router } = renderApp("/estoque");

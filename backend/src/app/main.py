@@ -15,6 +15,7 @@ from app.modules.config.router import router as config_router
 from app.modules.finance.router import router as finance_router
 from app.modules.inventory.router import router as inventory_router
 from app.modules.orders.router import router as orders_router
+from app.modules.payables.router import router as payables_router
 from app.modules.people.router import router as people_router
 from app.modules.rbac.router import router as rbac_router
 from app.modules.reports.router import router as reports_router
@@ -52,6 +53,7 @@ ROUTERS = (
     cash_router,
     sales_router,
     finance_router,
+    payables_router,
     reports_router,
 )
 

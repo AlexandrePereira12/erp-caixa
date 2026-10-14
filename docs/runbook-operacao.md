@@ -46,7 +46,7 @@ começando pela de menor risco.
   segurança antes, para api/web, restaura **como `<slug>_owner`** (o dump não carrega dono nem ACL:
   `--no-owner --no-privileges`), **reaplica os privilégios do role da API** — o `pg_restore` sozinho
   deixaria esse role com UPDATE/DELETE nas tabelas de histórico —, roda `migrate` e a verificação de
-  sanidade completa, **confere que UPDATE é negado a `<slug>_app` em todas as tabelas append-only** e só
+  sanidade completa, **confere, consultando o privilégio de fato, que `<slug>_app` não tem UPDATE/DELETE/TRUNCATE em nenhuma tabela append-only** e só
   então sobe api/web. Qualquer falha nessas etapas mantém a empresa parada e informa o backup de segurança.
 
 ## 5. Certificados

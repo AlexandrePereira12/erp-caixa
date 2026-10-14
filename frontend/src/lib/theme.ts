@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { readPreference, writePreference } from "./preferences";
 
 /** Preferência de tema: "system" segue o sistema operacional (sem `data-theme` no <html>). */
 export type ThemePreference = "light" | "dark" | "system";
@@ -11,12 +12,8 @@ function isPreference(value: unknown): value is ThemePreference {
 }
 
 export function readThemePreference(): ThemePreference {
-  try {
-    const saved = localStorage.getItem(KEY);
-    return isPreference(saved) ? saved : "system";
-  } catch {
-    return "system";
-  }
+  const saved = readPreference(KEY);
+  return isPreference(saved) ? saved : "system";
 }
 
 /** Aplica no <html>. O public/theme-init.js faz o mesmo antes da primeira pintura. */
@@ -27,12 +24,7 @@ export function applyThemePreference(preference: ThemePreference): void {
 }
 
 export function setThemePreference(preference: ThemePreference): void {
-  try {
-    if (preference === "system") localStorage.removeItem(KEY);
-    else localStorage.setItem(KEY, preference);
-  } catch {
-    /* sem armazenamento (janela privativa): vale só até recarregar */
-  }
+  writePreference(KEY, preference === "system" ? null : preference);
   applyThemePreference(preference);
   listeners.forEach((listener) => listener());
 }

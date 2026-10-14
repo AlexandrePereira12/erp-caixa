@@ -14,6 +14,7 @@ from app.core.pagination import Paginacao
 from app.core.tempo import para_utc
 from app.modules.catalog.models import Produto
 from app.modules.catalog.service import validar_casas
+from app.modules.finance.schemas import PessoaResumo
 from app.modules.inventory.models import (
     EstoqueSaldo,
     Inventario,
@@ -31,6 +32,8 @@ from app.modules.inventory.schemas import (
     MovimentoOut,
     SaldoOut,
 )
+from app.modules.people import service as pessoas
+from app.modules.people.models import Pessoa
 from app.modules.users.models import Usuario
 
 # --- núcleo: todo movimento de estoque do sistema passa por aqui -------------------------------
@@ -66,6 +69,7 @@ def aplicar_movimento(
     documento: str | None = None,
     justificativa: str | None = None,
     permitir_negativo: bool = False,
+    fornecedor_id: int | None = None,
 ) -> MovimentoEstoque:
     """Soma `delta` ao saldo sob trava, grava o movimento (com o saldo resultante) e, em entradas
     com custo, recalcula o custo médio ponderado. Não faz commit: a transação é do chamador."""
@@ -106,6 +110,7 @@ def aplicar_movimento(
         origem_id=origem_id,
         documento=documento,
         justificativa=justificativa,
+        fornecedor_id=fornecedor_id,
     )
     db.add(mov)
     db.flush()
@@ -131,6 +136,11 @@ def _estado_mov(m: MovimentoEstoque) -> dict[str, Any]:
 def registrar_entrada(db: Session, dados: EntradaIn) -> MovimentoEstoque:
     produto = _produto_controlado(db, dados.produto_id)
     validar_casas(dados.quantidade, produto.unidade)
+    fornecedor = (
+        pessoas.exigir_fornecedor(db, dados.fornecedor_id)
+        if dados.fornecedor_id is not None
+        else None
+    )
     mov = aplicar_movimento(
         db,
         produto=produto,
@@ -140,14 +150,16 @@ def registrar_entrada(db: Session, dados: EntradaIn) -> MovimentoEstoque:
         custo_unitario=dados.custo_unitario,
         documento=dados.documento,
         justificativa=dados.justificativa,
+        fornecedor_id=fornecedor.id if fornecedor else None,
     )
+    de = f" do fornecedor {fornecedor.nome}" if fornecedor else ""
     registrar(
         db,
         Acao.CREATE,
         "estoque",
         "movimento_estoque",
         mov.id,
-        f"Entrada de {dados.quantidade:f} {produto.unidade.sigla} de {produto.nome}.",
+        f"Entrada de {dados.quantidade:f} {produto.unidade.sigla} de {produto.nome}{de}.",
         depois=_estado_mov(mov),
     )
     db.commit()
@@ -194,7 +206,9 @@ def registrar_ajuste(db: Session, auth: AuthContext, dados: AjusteIn) -> Movimen
 # --- consultas ---------------------------------------------------------------------------------
 
 
-def _mov_out(m: MovimentoEstoque, usuario_nome: str | None) -> MovimentoOut:
+def _mov_out(
+    m: MovimentoEstoque, usuario_nome: str | None, fornecedor_nome: str | None = None
+) -> MovimentoOut:
     return MovimentoOut(
         id=m.id,
         produto_id=m.produto_id,
@@ -208,6 +222,11 @@ def _mov_out(m: MovimentoEstoque, usuario_nome: str | None) -> MovimentoOut:
         origem_id=m.origem_id,
         documento=m.documento,
         justificativa=m.justificativa,
+        fornecedor=(
+            PessoaResumo(id=m.fornecedor_id, nome=fornecedor_nome)
+            if m.fornecedor_id is not None and fornecedor_nome is not None
+            else None
+        ),
         ocorrido_em=m.ocorrido_em,
         usuario_nome=usuario_nome,
     )
@@ -217,7 +236,12 @@ def montar_movimento(db: Session, m: MovimentoEstoque) -> MovimentoOut:
     nome = (
         db.scalar(select(Usuario.nome).where(Usuario.id == m.created_by)) if m.created_by else None
     )
-    return _mov_out(m, nome)
+    fornecedor = (
+        db.scalar(select(Pessoa.nome).where(Pessoa.id == m.fornecedor_id))
+        if m.fornecedor_id
+        else None
+    )
+    return _mov_out(m, nome, fornecedor)
 
 
 def listar_movimentos(
@@ -242,15 +266,17 @@ def listar_movimentos(
     if ate is not None:
         filtros.append(MovimentoEstoque.ocorrido_em < ate)
     total = db.scalar(select(func.count()).select_from(MovimentoEstoque).where(*filtros)) or 0
+    # Nomes por JOIN na mesma consulta (usuário e fornecedor): sem N+1 e sem carregar Pessoa inteira.
     linhas = db.execute(
-        select(MovimentoEstoque, Usuario.nome)
+        select(MovimentoEstoque, Usuario.nome, Pessoa.nome)
         .outerjoin(Usuario, Usuario.id == MovimentoEstoque.created_by)
+        .outerjoin(Pessoa, Pessoa.id == MovimentoEstoque.fornecedor_id)
         .where(*filtros)
         .order_by(MovimentoEstoque.ocorrido_em.desc(), MovimentoEstoque.id.desc())
         .limit(pag.limite)
         .offset(pag.deslocamento)
     ).all()
-    return [_mov_out(m, nome) for m, nome in linhas], total
+    return [_mov_out(m, nome, fornecedor) for m, nome, fornecedor in linhas], total
 
 
 def listar_saldos(

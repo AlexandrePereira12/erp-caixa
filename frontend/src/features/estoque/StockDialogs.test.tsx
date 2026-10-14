@@ -70,6 +70,28 @@ describe("Entrada de estoque", () => {
     expect(mock.callsTo("POST /api/v1/estoque/entradas")[0]!.body).toEqual({ produto_id: 7, quantidade: "3", documento: null, justificativa: null });
   });
 
+  it("fornecedor é opcional: com pessoas.listar busca fornecedores e envia fornecedor_id", async () => {
+    const { mock, dialog, user } = await openEntry([...STOCK_PERMISSIONS, "catalogo.listar", "pessoas.listar"]);
+    mock.on("GET /api/v1/pessoas", (call) => json(200, page(call.query.get("papel") === "fornecedor" ? [{ id: 21, nome: "Distribuidora Boa Mesa Ltda", nome_fantasia: null }] : [])));
+    mock.on("POST /api/v1/estoque/entradas", json(201, movimento()));
+
+    await chooseProduct(dialog, user, /Farinha de Trigo/);
+    await user.type(within(dialog).getByLabelText(/^Quantidade/), "3");
+    await user.type(within(dialog).getByRole("combobox", { name: /^Fornecedor/ }), "Distri");
+    await user.click(await within(dialog).findByRole("option", { name: /Distribuidora Boa Mesa/ }));
+    expect(within(dialog).getByRole("group", { name: "Fornecedor selecionado" })).toBeTruthy();
+    expect(mock.callsTo("GET /api/v1/pessoas")[0]?.query.get("papel")).toBe("fornecedor");
+
+    await user.click(within(dialog).getByRole("button", { name: "Registrar entrada" }));
+    await waitFor(() => expect(mock.callsTo("POST /api/v1/estoque/entradas")).toHaveLength(1));
+    expect(mock.callsTo("POST /api/v1/estoque/entradas")[0]!.body).toEqual({ produto_id: 7, quantidade: "3", documento: null, justificativa: null, fornecedor_id: 21 });
+  });
+
+  it("sem pessoas.listar o campo de fornecedor nem aparece", async () => {
+    const { dialog } = await openEntry();
+    expect(within(dialog).queryByRole("combobox", { name: /^Fornecedor/ })).toBeNull();
+  });
+
   it("respeita as casas da unidade: UN não aceita 1,5 e o aviso vem antes do envio", async () => {
     const { mock, dialog, user } = await openEntry();
     await chooseProduct(dialog, user, /Coca-Cola Lata/);

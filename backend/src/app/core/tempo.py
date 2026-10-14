@@ -1,6 +1,6 @@
 """Fuso horário da empresa: a fonte única para interpretar datas sem fuso."""
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from zoneinfo import ZoneInfo
 
 from sqlalchemy.orm import Session
@@ -10,6 +10,12 @@ from app.modules.config.models import ConfiguracaoEmpresa
 
 def fuso_da_empresa(db: Session) -> ZoneInfo:
     return ZoneInfo(db.get_one(ConfiguracaoEmpresa, 1).timezone)
+
+
+def hoje_da_empresa(db: Session) -> date:
+    """O dia de hoje no fuso da EMPRESA (não o do servidor nem UTC): vencimentos e datas de
+    pagamento são datas de calendário da empresa."""
+    return datetime.now(fuso_da_empresa(db)).date()
 
 
 def para_utc(db: Session, instante: datetime | None) -> datetime | None:

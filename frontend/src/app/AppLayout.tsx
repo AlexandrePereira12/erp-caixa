@@ -140,13 +140,15 @@ export function AppLayout() {
           <Button variant="secondary" size="sm" className="w-9 px-0 lg:hidden" aria-label="Abrir menu" aria-haspopup="dialog" onClick={() => setDrawerOpen(true)}>
             <MenuIcon />
           </Button>
-          <span className="flex items-center gap-2 font-display text-lg font-semibold text-fg lg:hidden">
+          <span className="flex min-w-0 items-center gap-2 font-display text-lg font-semibold text-fg lg:hidden">
             <BrandMark size={26} />
-            PDV Restaurante
+            <span className="truncate">PDV Restaurante</span>
           </span>
 
-          <div className="ml-auto flex items-center gap-3">
-            <ThemeToggle className="hidden sm:inline-flex" />
+          <div className="ml-auto flex shrink-0 items-center gap-3">
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
             <span aria-hidden="true" className="hidden h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-bold text-on-accent sm:flex">
               {initials(me?.nome)}
             </span>

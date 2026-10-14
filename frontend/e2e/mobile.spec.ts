@@ -43,7 +43,7 @@ test.describe.serial("atendimento no celular", () => {
     await semRolagemHorizontal(page, "comanda com itens");
     await page.screenshot({ path: "test-results/mobile-comanda.png", fullPage: false });
 
-    for (const rota of ["/vendas", "/comandas", "/produtos", "/estoque", "/usuarios", "/contas-receber"]) {
+    for (const rota of ["/vendas", "/comandas", "/produtos", "/estoque", "/usuarios", "/contas-receber", "/contas-pagar", "/financeiro/categorias", "/relatorios", "/relatorios/vendas", "/relatorios/produtos", "/relatorios/compras", "/relatorios/caixa", "/relatorios/estoque", "/relatorios/perdas"]) {
       await page.goto(rota);
       await page.waitForLoadState("networkidle");
       await semRolagemHorizontal(page, rota);

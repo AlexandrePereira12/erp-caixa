@@ -1,6 +1,9 @@
 import { Outlet, type RouteObject } from "react-router-dom";
 import { AppLayout } from "./AppLayout";
 import { cadastrosRoutes } from "./routes.cadastros";
+import { contasPagarRoutes } from "./routes.contaspagar";
+import { financeiroRoutes } from "./routes.financeiro";
+import { relatoriosRoutes } from "./routes.relatorios";
 import { pdvRoutes } from "./routes.pdv";
 import { AuditDetailPage } from "@/features/audit/AuditDetailPage";
 import { AuditPage } from "@/features/audit/AuditPage";
@@ -34,6 +37,9 @@ export const routes: RouteObject[] = [
               { path: "/", element: <Home /> },
               ...pdvRoutes,
               ...cadastrosRoutes,
+              ...financeiroRoutes,
+              ...contasPagarRoutes,
+              ...relatoriosRoutes,
               {
                 path: "/usuarios",
                 element: (

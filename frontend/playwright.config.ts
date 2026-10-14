@@ -22,7 +22,7 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   projects: [
-    { name: "desktop", testMatch: /fluxo-completo\.spec\.ts/, use: { ...devices["Desktop Chrome"] } },
+    { name: "desktop", testMatch: /(fluxo-completo|nav-tema|relatorios-financeiro)\.spec\.ts/, use: { ...devices["Desktop Chrome"] } },
     { name: "celular", testMatch: /mobile\.spec\.ts/, dependencies: ["desktop"], use: { ...devices["Pixel 7"] } },
   ],
 });

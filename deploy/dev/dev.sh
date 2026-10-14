@@ -2,7 +2,7 @@
 # Ambiente de desenvolvimento local.
 #   dev.sh db     sobe o Postgres de dev e prepara o banco (idempotente): migrations e, se o banco
 #                 for novo, administrador e dados de demonstração
-#   dev.sh api    backend em modo reload
+#   dev.sh api    backend em modo reload (antes aplica migrations e sincroniza permissões)
 #   dev.sh web    frontend (Vite) apontando para o backend
 #   dev.sh tudo   api + web no mesmo terminal (Ctrl+C encerra os dois)
 # Variáveis: PORTA_API (padrão 8010; a 8000 costuma estar ocupada).
@@ -26,6 +26,16 @@ BACK="$RAIZ/backend"
 PY="$BACK/.venv/bin"
 [[ -x "$PY/python" ]] || { echo "backend sem venv: rode 'make setup'" >&2; exit 1; }
 
+# Migrations e permissões novas: idempotente e rápido quando já está em dia. Em produção o container
+# `migrate` faz o mesmo a cada subida; sem isso, código novo falha com "coluna não existe".
+migrar() {
+  (
+    cd "$BACK"
+    "$PY/alembic" upgrade head
+    "$PY/python" -m app.cli bootstrap
+  )
+}
+
 banco() {
   "${COMPOSE[@]}" up -d --wait
   local novo=0
@@ -36,9 +46,8 @@ banco() {
       -c "CREATE DATABASE $DB TEMPLATE pdv_test OWNER pdv_owner" >/dev/null
     novo=1
   fi
+  migrar
   cd "$BACK"
-  "$PY/alembic" upgrade head
-  "$PY/python" -m app.cli bootstrap
   if ((novo)); then
     printf '%s\n' "$ADMIN_SENHA" | "$PY/python" -m app.cli create-admin --email "$ADMIN_EMAIL" --nome "Admin Dev"
     "$PY/python" -m app.cli seed-demo
@@ -47,6 +56,7 @@ banco() {
 }
 
 api() {
+  migrar
   cd "$BACK"
   exec "$PY/uvicorn" app.main:create_app --factory --reload --port "$PORTA_API"
 }

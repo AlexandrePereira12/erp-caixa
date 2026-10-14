@@ -556,6 +556,110 @@ export interface paths {
         patch: operations["editar_api_v1_configuracoes_patch"];
         trace?: never;
     };
+    "/api/v1/contas-pagar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Listar */
+        get: operations["listar_api_v1_contas_pagar_get"];
+        put?: never;
+        /** Criar */
+        post: operations["criar_api_v1_contas_pagar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas-pagar/resumo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Resumo */
+        get: operations["resumo_api_v1_contas_pagar_resumo_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas-pagar/{titulo_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obter */
+        get: operations["obter_api_v1_contas_pagar__titulo_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Editar */
+        patch: operations["editar_api_v1_contas_pagar__titulo_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/contas-pagar/{titulo_id}/baixas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Baixar */
+        post: operations["baixar_api_v1_contas_pagar__titulo_id__baixas_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas-pagar/{titulo_id}/baixas/{baixa_id}/estornar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Estornar Baixa */
+        post: operations["estornar_baixa_api_v1_contas_pagar__titulo_id__baixas__baixa_id__estornar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/contas-pagar/{titulo_id}/cancelar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancelar */
+        post: operations["cancelar_api_v1_contas_pagar__titulo_id__cancelar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/contas-receber": {
         parameters: {
             query?: never;
@@ -1165,6 +1269,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/relatorios/compras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Compras */
+        get: operations["compras_api_v1_relatorios_compras_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/relatorios/estoque": {
         parameters: {
             query?: never;
@@ -1191,6 +1312,23 @@ export interface paths {
         };
         /** Perdas */
         get: operations["perdas_api_v1_relatorios_perdas_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/relatorios/produtos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Produtos */
+        get: operations["produtos_api_v1_relatorios_produtos_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1489,6 +1627,48 @@ export interface components {
             /** Valor */
             valor: string;
         };
+        /** BaixaPagarIn */
+        BaixaPagarIn: {
+            /** Chave */
+            chave?: string | null;
+            /** Data Pagamento */
+            data_pagamento?: string | null;
+            /** Forma Pagamento Id */
+            forma_pagamento_id: number;
+            /** Observacao */
+            observacao?: string | null;
+            /** Valor */
+            valor: number | string;
+        };
+        /** BaixaPagarOut */
+        BaixaPagarOut: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Data Pagamento
+             * Format: date
+             */
+            data_pagamento: string;
+            /** Estornada */
+            estornada: boolean;
+            /** Estorno De Id */
+            estorno_de_id: number | null;
+            /** Forma */
+            forma: string;
+            /** Forma Pagamento Id */
+            forma_pagamento_id: number;
+            /** Id */
+            id: number;
+            /** Observacao */
+            observacao: string | null;
+            /** Usuario Nome */
+            usuario_nome: string | null;
+            /** Valor */
+            valor: string;
+        };
         /** CaixaAbertoOut */
         CaixaAbertoOut: {
             /**
@@ -1561,6 +1741,11 @@ export interface components {
             /** Valor Abertura */
             valor_abertura: string;
         };
+        /** CancelarTituloPagarIn */
+        CancelarTituloPagarIn: {
+            /** Motivo */
+            motivo: string;
+        };
         /** CategoriaEditarIn */
         CategoriaEditarIn: {
             /** Ativo */
@@ -1600,6 +1785,13 @@ export interface components {
              * @enum {string}
              */
             tipo: "receita" | "despesa";
+        };
+        /** CategoriaFinanceiraResumo */
+        CategoriaFinanceiraResumo: {
+            /** Id */
+            id: number;
+            /** Nome */
+            nome: string;
         };
         /** CategoriaIn */
         CategoriaIn: {
@@ -1955,6 +2147,8 @@ export interface components {
             custo_unitario?: (number | string) | null;
             /** Documento */
             documento?: string | null;
+            /** Fornecedor Id */
+            fornecedor_id?: number | null;
             /** Justificativa */
             justificativa?: string | null;
             /** Produto Id */
@@ -1990,6 +2184,11 @@ export interface components {
             saldo: string;
             /** Unidade */
             unidade: string;
+        };
+        /** EstornarBaixaPagarIn */
+        EstornarBaixaPagarIn: {
+            /** Motivo */
+            motivo: string;
         };
         /** EstornoIn */
         EstornoIn: {
@@ -2305,6 +2504,23 @@ export interface components {
             /** Vendas Total */
             vendas_total: string;
         };
+        /** LinhaCompras */
+        LinhaCompras: {
+            /** Chave */
+            chave: string;
+            /** Entradas Qtd */
+            entradas_qtd: number;
+            /** Entradas Sem Custo */
+            entradas_sem_custo: number;
+            /** Quantidade */
+            quantidade: string | null;
+            /** Rotulo */
+            rotulo: string;
+            /** Unidade */
+            unidade: string | null;
+            /** Valor */
+            valor: string;
+        };
         /** LinhaEstoque */
         LinhaEstoque: {
             /** Abaixo Minimo */
@@ -2340,6 +2556,40 @@ export interface components {
             produto_id: number;
             /** Quantidade */
             quantidade: string;
+            /** Unidade */
+            unidade: string;
+        };
+        /** LinhaProdutos */
+        LinhaProdutos: {
+            /** Acumulado Pct */
+            acumulado_pct: string;
+            /** Categoria */
+            categoria: string | null;
+            /**
+             * Curva
+             * @enum {string}
+             */
+            curva: "A" | "B" | "C";
+            /** Custo */
+            custo: string;
+            /** Margem */
+            margem: string;
+            /** Margem Pct */
+            margem_pct: string | null;
+            /** Participacao Pct */
+            participacao_pct: string;
+            /** Produto */
+            produto: string;
+            /** Produto Id */
+            produto_id: number;
+            /** Quantidade */
+            quantidade: string;
+            /** Receita */
+            receita: string;
+            /** Sem Custo */
+            sem_custo: boolean;
+            /** Tipo */
+            tipo: string;
             /** Unidade */
             unidade: string;
         };
@@ -2496,6 +2746,7 @@ export interface components {
             custo_unitario: string | null;
             /** Documento */
             documento: string | null;
+            fornecedor: components["schemas"]["PessoaResumo"] | null;
             /** Id */
             id: number;
             /** Justificativa */
@@ -2649,6 +2900,17 @@ export interface components {
             deslocamento: number;
             /** Itens */
             itens: components["schemas"]["TituloOut"][];
+            /** Limite */
+            limite: number;
+            /** Total */
+            total: number;
+        };
+        /** Page[TituloPagarOut] */
+        Page_TituloPagarOut_: {
+            /** Deslocamento */
+            deslocamento: number;
+            /** Itens */
+            itens: components["schemas"]["TituloPagarOut"][];
             /** Limite */
             limite: number;
             /** Total */
@@ -2959,6 +3221,21 @@ export interface components {
             /** Vendavel */
             vendavel: boolean;
         };
+        /** ProdutoSemVendaOut */
+        ProdutoSemVendaOut: {
+            /** Categoria */
+            categoria: string | null;
+            /** Produto */
+            produto: string;
+            /** Produto Id */
+            produto_id: number;
+            /** Saldo */
+            saldo: string | null;
+            /** Tipo */
+            tipo: string;
+            /** Unidade */
+            unidade: string;
+        };
         /** ReaberturaIn */
         ReaberturaIn: {
             /** Justificativa */
@@ -2981,6 +3258,29 @@ export interface components {
             /** Por Forma */
             por_forma: components["schemas"]["DiferencaPorForma"][];
         };
+        /** RelatorioComprasOut */
+        RelatorioComprasOut: {
+            /**
+             * Agrupado Por
+             * @enum {string}
+             */
+            agrupado_por: "dia" | "fornecedor" | "produto" | "categoria";
+            janela: components["schemas"]["JanelaOut"];
+            /** Linhas */
+            linhas: components["schemas"]["LinhaCompras"][];
+            resumo: components["schemas"]["RelatorioComprasResumo"];
+        };
+        /** RelatorioComprasResumo */
+        RelatorioComprasResumo: {
+            /** Entradas Sem Custo */
+            entradas_sem_custo: number;
+            /** Itens */
+            itens: number;
+            /** Quantidade Entradas */
+            quantidade_entradas: number;
+            /** Valor Total */
+            valor_total: string;
+        };
         /** RelatorioEstoqueOut */
         RelatorioEstoqueOut: {
             /** Abaixo Minimo Qtd */
@@ -3001,6 +3301,37 @@ export interface components {
             linhas: components["schemas"]["LinhaPerdas"][];
             /** Ocorrencias */
             ocorrencias: number;
+        };
+        /** RelatorioProdutosOut */
+        RelatorioProdutosOut: {
+            janela: components["schemas"]["JanelaOut"];
+            /** Linhas */
+            linhas: components["schemas"]["LinhaProdutos"][];
+            /**
+             * Ordenado Por
+             * @enum {string}
+             */
+            ordenado_por: "receita" | "quantidade" | "margem";
+            resumo: components["schemas"]["RelatorioProdutosResumo"];
+            /** Sem Venda */
+            sem_venda: components["schemas"]["ProdutoSemVendaOut"][];
+        };
+        /** RelatorioProdutosResumo */
+        RelatorioProdutosResumo: {
+            /** Custo Total */
+            custo_total: string;
+            /** Margem Pct Total */
+            margem_pct_total: string | null;
+            /** Margem Total */
+            margem_total: string;
+            /** Produtos Sem Custo */
+            produtos_sem_custo: number;
+            /** Produtos Vendidos */
+            produtos_vendidos: number;
+            /** Receita Total */
+            receita_total: string;
+            /** Sem Venda Qtd */
+            sem_venda_qtd: number;
         };
         /** RelatorioVendasOut */
         RelatorioVendasOut: {
@@ -3031,6 +3362,40 @@ export interface components {
             ticket_medio: string;
             /** Vendas Qtd */
             vendas_qtd: number;
+        };
+        /** ResumoPagarOut */
+        ResumoPagarOut: {
+            /** A Vencer 7 Dias */
+            a_vencer_7_dias: string;
+            /** A Vencer 7 Dias Qtd */
+            a_vencer_7_dias_qtd: number;
+            /**
+             * Data Referencia
+             * Format: date
+             */
+            data_referencia: string;
+            /** Em Aberto */
+            em_aberto: string;
+            /** Em Aberto Qtd */
+            em_aberto_qtd: number;
+            /**
+             * Mes Ate
+             * Format: date
+             */
+            mes_ate: string;
+            /**
+             * Mes De
+             * Format: date
+             */
+            mes_de: string;
+            /** Pago No Mes */
+            pago_no_mes: string;
+            /** Pago No Mes Qtd */
+            pago_no_mes_qtd: number;
+            /** Vencido */
+            vencido: string;
+            /** Vencido Qtd */
+            vencido_qtd: number;
         };
         /** SaldoAbertoOut */
         SaldoAbertoOut: {
@@ -3107,6 +3472,139 @@ export interface components {
             vencimento: string | null;
             /** Venda Id */
             venda_id: number | null;
+        };
+        /** TituloPagarDetalheOut */
+        TituloPagarDetalheOut: {
+            /** Baixas */
+            baixas: components["schemas"]["BaixaPagarOut"][];
+            /** Cancelado Motivo */
+            cancelado_motivo: string | null;
+            categoria: components["schemas"]["CategoriaFinanceiraResumo"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Descricao */
+            descricao: string;
+            /** Dias Para Vencer */
+            dias_para_vencer: number | null;
+            /** Documento */
+            documento: string | null;
+            fornecedor: components["schemas"]["PessoaResumo"] | null;
+            /** Id */
+            id: number;
+            /** Observacao */
+            observacao: string | null;
+            /** Pago Em */
+            pago_em: string | null;
+            /** Saldo */
+            saldo: string;
+            /**
+             * Situacao
+             * @enum {string}
+             */
+            situacao: "a_vencer" | "vencido" | "pago" | "cancelado";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "aberto" | "pago" | "cancelado";
+            /** Valor Original */
+            valor_original: string;
+            /** Valor Pago */
+            valor_pago: string;
+            /**
+             * Vencimento
+             * Format: date
+             */
+            vencimento: string;
+        };
+        /**
+         * TituloPagarEditarIn
+         * @description Só o que for enviado muda; enviar null limpa fornecedor, categoria, documento e observação.
+         *     O valor só muda enquanto o título não tem nenhuma baixa (nem estornada).
+         */
+        TituloPagarEditarIn: {
+            /** Categoria Id */
+            categoria_id?: number | null;
+            /** Descricao */
+            descricao?: string | null;
+            /** Documento */
+            documento?: string | null;
+            /** Observacao */
+            observacao?: string | null;
+            /** Pessoa Id */
+            pessoa_id?: number | null;
+            /** Valor Original */
+            valor_original?: (number | string) | null;
+            /** Vencimento */
+            vencimento?: string | null;
+        };
+        /** TituloPagarIn */
+        TituloPagarIn: {
+            /** Categoria Id */
+            categoria_id?: number | null;
+            /** Descricao */
+            descricao: string;
+            /** Documento */
+            documento?: string | null;
+            /** Observacao */
+            observacao?: string | null;
+            /** Pessoa Id */
+            pessoa_id?: number | null;
+            /** Valor Original */
+            valor_original: number | string;
+            /**
+             * Vencimento
+             * Format: date
+             */
+            vencimento: string;
+        };
+        /** TituloPagarOut */
+        TituloPagarOut: {
+            /** Cancelado Motivo */
+            cancelado_motivo: string | null;
+            categoria: components["schemas"]["CategoriaFinanceiraResumo"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Descricao */
+            descricao: string;
+            /** Dias Para Vencer */
+            dias_para_vencer: number | null;
+            /** Documento */
+            documento: string | null;
+            fornecedor: components["schemas"]["PessoaResumo"] | null;
+            /** Id */
+            id: number;
+            /** Observacao */
+            observacao: string | null;
+            /** Pago Em */
+            pago_em: string | null;
+            /** Saldo */
+            saldo: string;
+            /**
+             * Situacao
+             * @enum {string}
+             */
+            situacao: "a_vencer" | "vencido" | "pago" | "cancelado";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "aberto" | "pago" | "cancelado";
+            /** Valor Original */
+            valor_original: string;
+            /** Valor Pago */
+            valor_pago: string;
+            /**
+             * Vencimento
+             * Format: date
+             */
+            vencimento: string;
         };
         /** TokenOut */
         TokenOut: {
@@ -6071,6 +6569,566 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ConfiguracaoOut"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
+    listar_api_v1_contas_pagar_get: {
+        parameters: {
+            query?: {
+                situacao?: "todos" | "aberto" | "vencido" | "a_vencer" | "pago" | "cancelado";
+                pessoa_id?: number | null;
+                categoria_id?: number | null;
+                vencimento_de?: string | null;
+                vencimento_ate?: string | null;
+                q?: string | null;
+                limite?: number;
+                deslocamento?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_TituloPagarOut_"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
+    criar_api_v1_contas_pagar_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TituloPagarIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TituloPagarDetalheOut"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
+    resumo_api_v1_contas_pagar_resumo_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumoPagarOut"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
+    obter_api_v1_contas_pagar__titulo_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                titulo_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TituloPagarDetalheOut"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
+    editar_api_v1_contas_pagar__titulo_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                titulo_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TituloPagarEditarIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TituloPagarDetalheOut"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
+    baixar_api_v1_contas_pagar__titulo_id__baixas_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                titulo_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BaixaPagarIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TituloPagarDetalheOut"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
+    estornar_baixa_api_v1_contas_pagar__titulo_id__baixas__baixa_id__estornar_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                titulo_id: number;
+                baixa_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EstornarBaixaPagarIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TituloPagarDetalheOut"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
+    cancelar_api_v1_contas_pagar__titulo_id__cancelar_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                titulo_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelarTituloPagarIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TituloPagarDetalheOut"];
                 };
             };
             /** @description Não autenticado ou token inválido. */
@@ -9473,6 +10531,76 @@ export interface operations {
             };
         };
     };
+    compras_api_v1_relatorios_compras_get: {
+        parameters: {
+            query?: {
+                de?: string | null;
+                ate?: string | null;
+                fornecedor_id?: number | null;
+                agrupar?: "dia" | "fornecedor" | "produto" | "categoria";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelatorioComprasOut"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
     estoque_api_v1_relatorios_estoque_get: {
         parameters: {
             query?: {
@@ -9561,6 +10689,78 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RelatorioPerdasOut"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
+    produtos_api_v1_relatorios_produtos_get: {
+        parameters: {
+            query?: {
+                de?: string | null;
+                ate?: string | null;
+                categoria_id?: number | null;
+                tipo?: ("revenda" | "preparado" | "insumo" | "embalagem") | null;
+                ordenar?: "receita" | "quantidade" | "margem";
+                limite?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelatorioProdutosOut"];
                 };
             };
             /** @description Não autenticado ou token inválido. */

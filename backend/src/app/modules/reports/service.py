@@ -2,7 +2,7 @@ from datetime import UTC, date, datetime, time, timedelta
 from decimal import Decimal
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import Select, func, select
+from sqlalchemy import Select, and_, func, select
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
@@ -10,9 +10,15 @@ from app.core.money import quantizar_dinheiro
 from app.core.tempo import fuso_da_empresa
 from app.modules.cash import service as caixa_service
 from app.modules.cash.models import Caixa, CaixaConferencia, FormaPagamento, MovimentoCaixa
-from app.modules.catalog.models import CategoriaProduto, Produto
+from app.modules.catalog.models import (
+    CategoriaProduto,
+    Produto,
+    ProdutoComposicao,
+    UnidadeMedida,
+)
 from app.modules.finance.models import TituloReceber
 from app.modules.inventory.models import EstoqueSaldo, MovimentoEstoque
+from app.modules.people.models import Pessoa
 from app.modules.reports.schemas import (
     CaixaAbertoOut,
     ContasReceberResumoOut,
@@ -22,14 +28,21 @@ from app.modules.reports.schemas import (
     FaturamentoPeriodoOut,
     JanelaOut,
     LinhaCaixa,
+    LinhaCompras,
     LinhaEstoque,
     LinhaPerdas,
+    LinhaProdutos,
     LinhaVendas,
     MaisVendidoOut,
     PorFormaOut,
+    ProdutoSemVendaOut,
     RelatorioCaixaOut,
+    RelatorioComprasOut,
+    RelatorioComprasResumo,
     RelatorioEstoqueOut,
     RelatorioPerdasOut,
+    RelatorioProdutosOut,
+    RelatorioProdutosResumo,
     RelatorioVendasOut,
     RelatorioVendasResumo,
 )
@@ -539,4 +552,345 @@ def relatorio_perdas(db: Session, de: date | None, ate: date | None) -> Relatori
         linhas=linhas,
         custo_total=custo_total,
         ocorrencias=ocorrencias,
+    )
+
+
+# --- relatório de compras ----------------------------------------------------------------------
+
+
+def relatorio_compras(
+    db: Session,
+    de: date | None,
+    ate: date | None,
+    fornecedor_id: int | None,
+    agrupar: str,
+) -> RelatorioComprasOut:
+    """Compra = movimento de estoque do tipo `entrada` no período. O valor de cada entrada é
+    quantidade × custo unitário congelado no movimento, arredondado a centavos na própria entrada:
+    assim o total e as linhas (de qualquer agrupamento) sempre fecham ao centavo. Entrada sem custo
+    informado vale 0 e é contada em `entradas_sem_custo`."""
+    tz = fuso(db)
+    de, ate = validar_janela(de, ate, tz)
+    inicio, fim = limites_utc(de, ate, tz)
+    m = MovimentoEstoque
+    filtros = [m.tipo == "entrada", m.ocorrido_em >= inicio, m.ocorrido_em < fim]
+    if fornecedor_id is not None:
+        filtros.append(m.fornecedor_id == fornecedor_id)
+    valor = func.round(m.quantidade * func.coalesce(m.custo_unitario, 0), 2)
+    sem_custo = m.custo_unitario.is_(None)
+
+    # Totais numa consulta própria: não dependem do agrupamento escolhido.
+    total, entradas, itens, sem = db.execute(
+        select(
+            func.coalesce(func.sum(valor), 0),
+            func.count(),
+            func.count(func.distinct(m.produto_id)),
+            func.count().filter(sem_custo),
+        ).where(*filtros)
+    ).one()
+
+    soma, n_sem = func.sum(valor), func.count().filter(sem_custo)
+    linhas: list[LinhaCompras] = []
+    if agrupar == "dia":
+        dia = func.date(func.timezone(str(tz), m.ocorrido_em))
+        for d, n, v, s in db.execute(
+            select(dia, func.count(), soma, n_sem).where(*filtros).group_by(dia).order_by(dia)
+        ):
+            linhas.append(
+                LinhaCompras(
+                    chave=d.isoformat(),
+                    rotulo=d.strftime("%d/%m/%Y"),
+                    entradas_qtd=n,
+                    quantidade=None,
+                    unidade=None,
+                    valor=v,
+                    entradas_sem_custo=s,
+                )
+            )
+    elif agrupar == "fornecedor":
+        for fid, nome, n, v, s in db.execute(
+            select(m.fornecedor_id, Pessoa.nome, func.count(), soma, n_sem)
+            .outerjoin(Pessoa, Pessoa.id == m.fornecedor_id)
+            .where(*filtros)
+            .group_by(m.fornecedor_id, Pessoa.nome)
+            .order_by(soma.desc(), m.fornecedor_id.nulls_last())
+        ):
+            linhas.append(
+                LinhaCompras(
+                    chave="sem_fornecedor" if fid is None else str(fid),
+                    rotulo=nome if fid is not None else "Sem fornecedor",
+                    entradas_qtd=n,
+                    quantidade=None,
+                    unidade=None,
+                    valor=v,
+                    entradas_sem_custo=s,
+                )
+            )
+    elif agrupar == "produto":
+        for pid, nome, sigla, n, qtd, v, s in db.execute(
+            select(
+                Produto.id,
+                Produto.nome,
+                UnidadeMedida.sigla,
+                func.count(),
+                func.sum(m.quantidade),
+                soma,
+                n_sem,
+            )
+            .select_from(m)
+            .join(Produto, Produto.id == m.produto_id)
+            .join(UnidadeMedida, UnidadeMedida.id == Produto.unidade_id)
+            .where(*filtros)
+            .group_by(Produto.id, Produto.nome, UnidadeMedida.sigla)
+            .order_by(soma.desc(), Produto.id)
+        ):
+            linhas.append(
+                LinhaCompras(
+                    chave=str(pid),
+                    rotulo=nome,
+                    entradas_qtd=n,
+                    quantidade=qtd,
+                    unidade=sigla,
+                    valor=v,
+                    entradas_sem_custo=s,
+                )
+            )
+    else:  # categoria do produto
+        for cid, nome, n, v, s in db.execute(
+            select(Produto.categoria_id, CategoriaProduto.nome, func.count(), soma, n_sem)
+            .select_from(m)
+            .join(Produto, Produto.id == m.produto_id)
+            .outerjoin(CategoriaProduto, CategoriaProduto.id == Produto.categoria_id)
+            .where(*filtros)
+            .group_by(Produto.categoria_id, CategoriaProduto.nome)
+            .order_by(soma.desc(), Produto.categoria_id.nulls_last())
+        ):
+            linhas.append(
+                LinhaCompras(
+                    chave="sem_categoria" if cid is None else str(cid),
+                    rotulo=nome if cid is not None else "Sem categoria",
+                    entradas_qtd=n,
+                    quantidade=None,
+                    unidade=None,
+                    valor=v,
+                    entradas_sem_custo=s,
+                )
+            )
+    return RelatorioComprasOut(
+        janela=JanelaOut(de=de, ate=ate),
+        agrupado_por=agrupar,  # type: ignore[arg-type]
+        resumo=RelatorioComprasResumo(
+            valor_total=total,
+            quantidade_entradas=entradas,
+            itens=itens,
+            entradas_sem_custo=sem,
+        ),
+        linhas=linhas,
+    )
+
+
+# --- relatório de produtos ---------------------------------------------------------------------
+
+# Curva ABC: classe A enquanto o acumulado ANTES do produto for menor que 80% da receita, B até
+# 95%, C o resto. Quem cruza o limite continua na classe que estava preenchendo: o produto mais
+# vendido é sempre A, mesmo que sozinho passe de 80%.
+_CORTE_A = Decimal(80)
+_CORTE_B = Decimal(95)
+
+
+def _curva(antes: Decimal, total: Decimal) -> str:
+    if total <= 0:
+        return "C"
+    if antes * 100 < _CORTE_A * total:
+        return "A"
+    if antes * 100 < _CORTE_B * total:
+        return "B"
+    return "C"
+
+
+def _pct(parte: Decimal, total: Decimal) -> Decimal | None:
+    return quantizar_dinheiro(parte * 100 / total) if total else None
+
+
+def _custos_das_vendas(db: Session, validas: list, filtros_produto: list) -> dict[int, Decimal]:
+    """Custo (sem arredondar) por produto vendido, a partir do custo congelado no movimento de
+    estoque de cada venda. A venda não guarda custo; o movimento é um por produto de estoque e
+    venda (`origem_tipo='venda'`, `origem_id=venda.id`).
+    - produto sem ficha técnica: quantidade vendida × custo do movimento do próprio produto;
+    - produto com ficha: Σ quantidade × quantidade do insumo na ficha × custo do movimento do
+      insumo (a ficha usada é a vigente hoje; o custo é o da hora da venda).
+    Produto sem ficha e sem controle de estoque não tem movimento: fica sem custo."""
+    m = MovimentoEstoque
+
+    def movimento_de(produto_col):
+        return and_(
+            m.tipo == "venda",
+            m.origem_tipo == "venda",
+            m.origem_id == Venda.id,
+            m.produto_id == produto_col,
+        )
+
+    base = (
+        select(VendaItem.produto_id)
+        .select_from(VendaItem)
+        .join(Venda, Venda.id == VendaItem.venda_id)
+        .join(Produto, Produto.id == VendaItem.produto_id)
+        .where(*validas, *filtros_produto)
+        .group_by(VendaItem.produto_id)
+    )
+    tem_ficha = (
+        select(ProdutoComposicao.id)
+        .where(ProdutoComposicao.produto_id == VendaItem.produto_id)
+        .exists()
+    )
+    custos: dict[int, Decimal] = {}
+    for produto_id, custo in db.execute(
+        base.add_columns(func.sum(VendaItem.quantidade * m.custo_unitario))
+        .join(m, movimento_de(VendaItem.produto_id))
+        .where(~tem_ficha)
+    ):
+        custos[produto_id] = custo
+    for produto_id, custo in db.execute(
+        base.add_columns(
+            func.sum(VendaItem.quantidade * ProdutoComposicao.quantidade * m.custo_unitario)
+        )
+        .join(ProdutoComposicao, ProdutoComposicao.produto_id == VendaItem.produto_id)
+        .join(m, movimento_de(ProdutoComposicao.insumo_id))
+    ):
+        custos[produto_id] = custo
+    return custos
+
+
+def relatorio_produtos(
+    db: Session,
+    de: date | None,
+    ate: date | None,
+    categoria_id: int | None,
+    tipo: str | None,
+    ordenar: str,
+    limite: int,
+) -> RelatorioProdutosOut:
+    tz = fuso(db)
+    de, ate = validar_janela(de, ate, tz)
+    inicio, fim = limites_utc(de, ate, tz)
+    validas = _vendas_validas(inicio, fim)  # mesma regra do relatório de vendas
+    filtros_produto = []
+    if categoria_id is not None:
+        filtros_produto.append(Produto.categoria_id == categoria_id)
+    if tipo:
+        filtros_produto.append(Produto.tipo == tipo)
+
+    vendidos = db.execute(
+        select(
+            Produto.id,
+            Produto.nome,
+            Produto.tipo,
+            CategoriaProduto.nome,
+            UnidadeMedida.sigla,
+            func.sum(VendaItem.quantidade),
+            func.sum(VendaItem.total),
+        )
+        .select_from(VendaItem)
+        .join(Venda, Venda.id == VendaItem.venda_id)
+        .join(Produto, Produto.id == VendaItem.produto_id)
+        .join(UnidadeMedida, UnidadeMedida.id == Produto.unidade_id)
+        .outerjoin(CategoriaProduto, CategoriaProduto.id == Produto.categoria_id)
+        .where(*validas, *filtros_produto)
+        .group_by(
+            Produto.id, Produto.nome, Produto.tipo, CategoriaProduto.nome, UnidadeMedida.sigla
+        )
+    ).all()
+    custos = _custos_das_vendas(db, validas, filtros_produto)
+
+    # Curva ABC e participação sobre TODOS os produtos vendidos, antes de ordenar e limitar.
+    linhas: list[LinhaProdutos] = []
+    receita_total = sum((v[6] for v in vendidos), Decimal(0))
+    acumulado = Decimal(0)
+    for pid, nome, tp, categoria, sigla, qtd, receita in sorted(
+        vendidos, key=lambda v: (-v[6], -v[5], v[0])
+    ):
+        custo = quantizar_dinheiro(custos.get(pid, Decimal(0)))
+        margem = receita - custo
+        curva = _curva(acumulado, receita_total)
+        acumulado += receita
+        linhas.append(
+            LinhaProdutos(
+                produto_id=pid,
+                produto=nome,
+                tipo=tp,
+                categoria=categoria,
+                unidade=sigla,
+                quantidade=qtd,
+                receita=receita,
+                custo=custo,
+                margem=margem,
+                margem_pct=_pct(margem, receita),
+                participacao_pct=_pct(receita, receita_total) or Decimal("0.00"),
+                acumulado_pct=_pct(acumulado, receita_total) or Decimal("0.00"),
+                curva=curva,  # type: ignore[arg-type]
+                sem_custo=custo == 0,
+            )
+        )
+    custo_total = sum((x.custo for x in linhas), Decimal(0))
+    margem_total = receita_total - custo_total
+
+    if ordenar == "quantidade":
+        linhas.sort(key=lambda x: (-x.quantidade, -x.receita, x.produto_id))
+    elif ordenar == "margem":
+        linhas.sort(key=lambda x: (-x.margem, -x.receita, x.produto_id))
+    # receita: já está nessa ordem (é a da curva)
+
+    vendeu = (
+        select(VendaItem.id)
+        .select_from(VendaItem)
+        .join(Venda, Venda.id == VendaItem.venda_id)
+        .where(VendaItem.produto_id == Produto.id, *validas)
+        .exists()
+    )
+    sem_venda = [
+        ProdutoSemVendaOut(
+            produto_id=p_id,
+            produto=nome,
+            tipo=tp,
+            categoria=categoria,
+            unidade=sigla,
+            saldo=(saldo or Decimal(0)) if controla else None,
+        )
+        for p_id, nome, tp, categoria, sigla, controla, saldo in db.execute(
+            select(
+                Produto.id,
+                Produto.nome,
+                Produto.tipo,
+                CategoriaProduto.nome,
+                UnidadeMedida.sigla,
+                Produto.controla_estoque,
+                EstoqueSaldo.quantidade,
+            )
+            .join(UnidadeMedida, UnidadeMedida.id == Produto.unidade_id)
+            .outerjoin(CategoriaProduto, CategoriaProduto.id == Produto.categoria_id)
+            .outerjoin(EstoqueSaldo, EstoqueSaldo.produto_id == Produto.id)
+            .where(
+                Produto.deleted_at.is_(None),
+                Produto.ativo.is_(True),
+                Produto.vendavel.is_(True),
+                ~vendeu,
+                *filtros_produto,
+            )
+            .order_by(func.lower(Produto.nome), Produto.id)
+        )
+    ]
+    return RelatorioProdutosOut(
+        janela=JanelaOut(de=de, ate=ate),
+        ordenado_por=ordenar,  # type: ignore[arg-type]
+        resumo=RelatorioProdutosResumo(
+            receita_total=receita_total,
+            custo_total=custo_total,
+            margem_total=margem_total,
+            margem_pct_total=_pct(margem_total, receita_total),
+            produtos_vendidos=len(linhas),
+            produtos_sem_custo=sum(1 for x in linhas if x.sem_custo),
+            sem_venda_qtd=len(sem_venda),
+        ),
+        linhas=linhas[:limite],
+        sem_venda=sem_venda,
     )

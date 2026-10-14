@@ -23,6 +23,9 @@ Fortaleza. Trocar o fuso muda a atribuição do dia, e o teste prova isso.
 - **Perdas**: movimentos `perda`, valorizados pelo custo médio congelado no próprio movimento.
 - Valor em estoque = saldo × custo médio atual, arredondado a 2 casas por produto.
 
+- Os relatórios de **compras** e de **produtos** (margem e curva ABC) usam a mesma janela e o mesmo fuso;
+  suas definições estão em `0007-contas-a-pagar-e-relatorios.md`.
+
 ## Exportação
 
 Excel/PDF ficam para a fase futura, como previsto na spec.

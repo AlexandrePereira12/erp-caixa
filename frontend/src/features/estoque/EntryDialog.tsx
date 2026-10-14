@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useStockMutations } from "./api";
 import { StockProductField } from "./StockProductField";
+import { SupplierField, type SupplierValue } from "./SupplierField";
 import type { EntradaIn, SaldoOut } from "./types";
 import { useUnitScales } from "@/features/catalogo/api";
 import { parseOptionalMoney, parseQuantityInput } from "@/features/catalogo/decimalInput";
@@ -31,6 +32,7 @@ export function EntryDialog({ onClose }: { onClose: () => void }) {
   const { scaleOf } = useUnitScales();
   const { entry } = useStockMutations();
   const [product, setProduct] = useState<SaldoOut | null>(null);
+  const [supplier, setSupplier] = useState<SupplierValue | null>(null);
   const [productError, setProductError] = useState<string | undefined>();
   const [formError, setFormError] = useState<string | null>(null);
   const {
@@ -61,6 +63,7 @@ export function EntryDialog({ onClose }: { onClose: () => void }) {
       justificativa: values.justificativa || null,
     };
     if (cost.value !== null) body.custo_unitario = cost.value;
+    if (supplier) body.fornecedor_id = supplier.id;
     try {
       const movement = await entry.mutateAsync(body);
       toast.success(`Entrada registrada: +${formatDecimal(movement.quantidade)} ${movement.unidade} de ${movement.produto_nome}. Saldo: ${formatDecimal(movement.saldo_apos)} ${movement.unidade}.`);
@@ -109,6 +112,7 @@ export function EntryDialog({ onClose }: { onClose: () => void }) {
         <FormField label="Custo unitário (R$)" error={errors.custo_unitario?.message} hint="Opcional. Quando informado, o sistema recalcula o custo médio do produto.">
           <Input inputMode="decimal" autoComplete="off" placeholder="Ex.: 12,50" {...register("custo_unitario")} />
         </FormField>
+        <SupplierField value={supplier} onChange={setSupplier} />
         <FormField label="Documento" error={errors.documento?.message} hint="Nota fiscal, pedido de compra…">
           <Input autoComplete="off" maxLength={60} {...register("documento")} />
         </FormField>

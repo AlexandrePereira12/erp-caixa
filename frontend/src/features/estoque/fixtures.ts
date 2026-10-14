@@ -31,6 +31,7 @@ export function movimento(over: Record<string, unknown> = {}) {
     justificativa: "Compra semanal",
     ocorrido_em: "2026-10-13T14:30:00+00:00",
     usuario_nome: "Ana Souza",
+    fornecedor: null,
     ...over,
   };
 }

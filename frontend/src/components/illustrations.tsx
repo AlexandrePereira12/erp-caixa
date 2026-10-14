@@ -21,7 +21,7 @@ export function PlateScene(props: Props) {
   return (
     <Svg viewBox="0 0 160 110" {...props}>
       <path d="M12 93c38 3 100-3 136 0" {...ink} opacity={0.5} />
-      <ellipse cx="80" cy="70" rx="45" ry="15" fill="var(--c-surface)" {...{ ...ink, fill: "var(--c-surface)" }} />
+      <ellipse cx="80" cy="70" rx="45" ry="15" {...ink} fill="var(--c-surface)" />
       <ellipse cx="80" cy="69" rx="31" ry="9" {...ink} opacity={0.35} />
       <ellipse cx="78" cy="68" rx="15" ry="7.5" fill="#fffdf8" stroke="var(--c-fg)" strokeWidth="1.6" />
       <circle cx="80" cy="67" r="4.6" fill="var(--c-accent)" stroke="var(--c-fg)" strokeWidth="1.4" />

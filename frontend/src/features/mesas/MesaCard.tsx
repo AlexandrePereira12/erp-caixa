@@ -25,7 +25,7 @@ const interactive = "hover:-translate-y-0.5 hover:shadow-md focus-visible:shadow
 /** Mesa vista de cima, com uma cadeira por lugar (2 a 8). Só enfeita: o número de lugares vem escrito ao lado. */
 function MesaGlyph({ lugares, className }: { lugares: number | null; className: string }) {
   const total = Math.min(Math.max(lugares ?? 4, 2), 8);
-  const top = Math.ceil(total / 2);
+  const top = total - Math.floor(total / 2);
   const chairs = (count: number, y: number) =>
     Array.from({ length: count }, (_, i) => <rect key={`${y}-${i}`} x={8 + (40 / count) * (i + 0.5) - 4} y={y} width="8" height="5" rx="2" fill="currentColor" opacity="0.55" />);
   return (

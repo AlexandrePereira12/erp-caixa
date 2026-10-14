@@ -19,6 +19,7 @@ from app.modules.config.models import ConfiguracaoEmpresa
 from app.modules.finance.models import CategoriaFinanceira, TituloReceber, TituloReceberBaixa
 from app.modules.inventory.models import EstoqueSaldo, Inventario, InventarioItem, MovimentoEstoque
 from app.modules.orders.models import Comanda, ComandaAjuste, ComandaEvento, ComandaItem
+from app.modules.payables.models import TituloPagar, TituloPagarBaixa
 from app.modules.people.models import Pessoa, PessoaCliente, PessoaEndereco, PessoaPapel
 from app.modules.rbac.models import Papel, Permissao, papel_permissao, usuario_papel
 from app.modules.sales.models import Venda, VendaEstorno, VendaItem, VendaPagamento
@@ -53,6 +54,8 @@ __all__ = [
     "Produto",
     "ProdutoComposicao",
     "RefreshToken",
+    "TituloPagar",
+    "TituloPagarBaixa",
     "TituloReceber",
     "TituloReceberBaixa",
     "UnidadeMedida",

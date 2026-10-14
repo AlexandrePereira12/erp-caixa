@@ -4,6 +4,7 @@ Idempotente: não faz nada se a empresa já tem produtos. Usa os mesmos serviço
 respeita as regras de negócio e fica na auditoria (autoria "seed-demo").
 """
 
+from datetime import timedelta
 from decimal import Decimal
 
 from sqlalchemy import func, select
@@ -11,6 +12,8 @@ from sqlalchemy.orm import Session
 
 from app.core.context import RequestContext, set_context
 from app.core.deps import AuthContext
+from app.core.tempo import hoje_da_empresa
+from app.modules.cash.models import FormaPagamento
 from app.modules.catalog import service as catalogo
 from app.modules.catalog.models import Produto, UnidadeMedida
 from app.modules.catalog.schemas import (
@@ -19,8 +22,11 @@ from app.modules.catalog.schemas import (
     ComposicaoItemIn,
     ProdutoIn,
 )
+from app.modules.finance.models import CategoriaFinanceira
 from app.modules.inventory import service as estoque
 from app.modules.inventory.schemas import EntradaIn
+from app.modules.payables import service as contas_pagar
+from app.modules.payables.schemas import BaixaPagarIn, TituloPagarIn
 from app.modules.people import service as pessoas
 from app.modules.people.schemas import ClienteIn, PessoaIn
 from app.modules.tables import service as mesas
@@ -93,6 +99,29 @@ def semear(db: Session) -> bool:
             ComposicaoIn(itens=[ComposicaoItemIn(insumo_id=i, quantidade=D(q)) for i, q in itens]),
         )
 
+    # Pessoas antes das entradas: a carga inicial de estoque é compra do fornecedor de demonstração.
+    pessoas.criar(
+        db,
+        _AUTH_SEED,
+        PessoaIn(
+            tipo="F",
+            nome="Cliente Balcão Fiel",
+            telefone="(85) 99999-0001",
+            papeis=["cliente"],
+            cliente=ClienteIn(aceita_fiado=True, limite_fiado=D("300")),
+        ),
+    )
+    pessoas.criar(
+        db,
+        _AUTH_SEED,
+        PessoaIn(tipo="F", nome="Maria Souza", telefone="(85) 98888-0002", papeis=["cliente"]),
+    )
+    fornecedor = pessoas.criar(
+        db,
+        _AUTH_SEED,
+        PessoaIn(tipo="J", nome="Distribuidora Boa Mesa Ltda", papeis=["fornecedor"]),
+    )
+
     entradas = [
         (refri, "120", "3.20"),
         (agua, "100", "1.50"),
@@ -112,6 +141,7 @@ def semear(db: Session) -> bool:
                 produto_id=p.id,
                 quantidade=D(qtd),
                 custo_unitario=D(custo),
+                fornecedor_id=fornecedor.id,
                 documento="Carga inicial",
             ),
         )
@@ -119,25 +149,79 @@ def semear(db: Session) -> bool:
     for i in range(1, 11):
         mesas.criar(db, MesaIn(nome=f"Mesa {i}", capacidade=4 if i <= 8 else 6))
 
-    pessoas.criar(
+    _contas_a_pagar(db, fornecedor.id)
+    return True
+
+
+def _contas_a_pagar(db: Session, fornecedor_id: int) -> None:
+    """Quatro contas de exemplo (vencida, a vencer, parcialmente paga e paga) pelos serviços reais.
+    Os vencimentos são relativos a hoje (fuso da empresa), então a demonstração nunca "envelhece".
+    Pagamento de conta não movimenta o caixa: o caixa e o estoque do seed ficam como estão."""
+
+    def categoria(nome: str) -> int | None:
+        return db.scalar(
+            select(CategoriaFinanceira.id).where(
+                CategoriaFinanceira.nome == nome,
+                CategoriaFinanceira.tipo == "despesa",
+                CategoriaFinanceira.deleted_at.is_(None),
+            )
+        )
+
+    pix = db.scalar(
+        select(FormaPagamento.id).where(
+            FormaPagamento.tipo == "pix", FormaPagamento.deleted_at.is_(None)
+        )
+    )
+    hoje = hoje_da_empresa(db)
+
+    contas_pagar.criar(
         db,
-        _AUTH_SEED,
-        PessoaIn(
-            tipo="F",
-            nome="Cliente Balcão Fiel",
-            telefone="(85) 99999-0001",
-            papeis=["cliente"],
-            cliente=ClienteIn(aceita_fiado=True, limite_fiado=D("300")),
+        TituloPagarIn(
+            categoria_id=categoria("Aluguel"),
+            descricao="Aluguel do salão",
+            documento="Recibo 112",
+            valor_original=D("2500.00"),
+            vencimento=hoje - timedelta(days=5),
         ),
     )
-    pessoas.criar(
+    contas_pagar.criar(
         db,
-        _AUTH_SEED,
-        PessoaIn(tipo="F", nome="Maria Souza", telefone="(85) 98888-0002", papeis=["cliente"]),
+        TituloPagarIn(
+            categoria_id=categoria("Energia e água"),
+            descricao="Conta de energia elétrica",
+            valor_original=D("680.40"),
+            vencimento=hoje + timedelta(days=3),
+        ),
     )
-    pessoas.criar(
+    parcial = contas_pagar.criar(
         db,
-        _AUTH_SEED,
-        PessoaIn(tipo="J", nome="Distribuidora Boa Mesa Ltda", papeis=["fornecedor"]),
+        TituloPagarIn(
+            pessoa_id=fornecedor_id,
+            categoria_id=categoria("Mercadorias e insumos"),
+            descricao="Compra de bebidas",
+            documento="NF 4821",
+            valor_original=D("1200.00"),
+            vencimento=hoje + timedelta(days=7),
+        ),
     )
-    return True
+    contas_pagar.baixar(
+        db,
+        parcial.id,
+        BaixaPagarIn(valor=D("500.00"), forma_pagamento_id=pix, observacao="Entrada da compra"),
+    )
+    paga = contas_pagar.criar(
+        db,
+        TituloPagarIn(
+            categoria_id=categoria("Manutenção"),
+            descricao="Manutenção da coifa",
+            valor_original=D("350.00"),
+            vencimento=hoje - timedelta(days=2),
+        ),
+    )
+    contas_pagar.baixar(
+        db,
+        paga.id,
+        BaixaPagarIn(
+            valor=D("350.00"), forma_pagamento_id=pix, data_pagamento=hoje - timedelta(days=3)
+        ),
+    )

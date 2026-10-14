@@ -243,15 +243,16 @@ def test_timeout_de_trava_vira_409_e_nao_500(pdv):
 
 IMUTAVEIS = {
     "auditoria_log", "movimento_estoque", "movimento_caixa", "caixa_evento", "comanda_evento",
-    "titulo_receber_baixa", "venda", "venda_item", "venda_pagamento", "venda_estorno",
-    "caixa_conferencia",
+    "titulo_receber_baixa", "titulo_pagar_baixa", "venda", "venda_item", "venda_pagamento",
+    "venda_estorno", "caixa_conferencia",
 }  # fmt: skip
 MUTAVEIS = {
     "usuario", "papel", "permissao", "papel_permissao", "usuario_papel", "refresh_token",
     "configuracao_empresa", "pessoa", "pessoa_papel", "pessoa_endereco", "pessoa_cliente",
     "unidade_medida", "categoria_produto", "produto", "produto_composicao", "estoque_saldo",
     "inventario", "inventario_item", "mesa", "comanda", "comanda_item", "comanda_ajuste",
-    "forma_pagamento", "caixa", "categoria_financeira", "titulo_receber", "alembic_version",
+    "forma_pagamento", "caixa", "categoria_financeira", "titulo_receber", "titulo_pagar",
+    "alembic_version",
 }  # fmt: skip
 
 
@@ -284,6 +285,7 @@ def test_toda_tabela_esta_classificada_e_as_imutaveis_estao_protegidas(ambiente)
             "pessoa",
             "estoque_saldo",
             "titulo_receber",
+            "titulo_pagar",
         ):  # contraprova: mutáveis seguem editáveis
             assert conn.execute(
                 "SELECT has_table_privilege(%s, %s, 'UPDATE')", (APP[0], t)

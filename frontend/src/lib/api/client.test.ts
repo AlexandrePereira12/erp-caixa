@@ -207,6 +207,8 @@ describe("parseErrorBody", () => {
   });
 });
 
+const PREFERENCES_FILE = "/src/lib/preferences.ts";
+
 describe("sessão: token nunca vai para o armazenamento do navegador", () => {
   it("login, refresh e chamadas autenticadas não gravam em localStorage/sessionStorage/cookie", async () => {
     const setItem = vi.spyOn(Storage.prototype, "setItem");
@@ -246,10 +248,19 @@ describe("sessão: token nunca vai para o armazenamento do navegador", () => {
   it("o código-fonte não usa localStorage/sessionStorage (guarda estática)", () => {
     const sources = import.meta.glob("/src/**/*.{ts,tsx}", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
     const offenders = Object.entries(sources)
-      .filter(([file]) => !/\.test\.tsx?$/.test(file) && !file.includes("/src/test/"))
+      .filter(([file]) => !/\.test\.tsx?$/.test(file) && !file.includes("/src/test/") && file !== PREFERENCES_FILE)
       .filter(([, content]) => /\b(localStorage|sessionStorage)\b/.test(content))
       .map(([file]) => file);
     expect(offenders).toEqual([]);
+  });
+
+  it("o único arquivo com acesso ao armazenamento (preferências de tela) não lida com token nem senha", () => {
+    const sources = import.meta.glob("/src/lib/preferences.ts", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
+    const content = sources[PREFERENCES_FILE] ?? "";
+    expect(content).toContain("localStorage");
+    // o comentário do arquivo cita "token" e "senha" para explicar a regra; o código em si não os usa
+    const code = content.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+    expect(code).not.toMatch(/token|senha|password|authorization/i);
   });
 });
 

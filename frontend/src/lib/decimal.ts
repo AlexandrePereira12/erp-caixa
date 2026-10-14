@@ -79,3 +79,25 @@ export function parseDecimalInput(text: string, maxScale = 2): string | null {
   if (frac.length > maxScale) return null;
   return normalized;
 }
+
+/** Maior valor da lista (comparado por valor, não por texto); lista vazia -> "0". */
+export function maxDecimal(values: string[]): string {
+  return values.reduce((best, v) => (compareDecimal(v, best) > 0 ? v : best), values[0] ?? "0");
+}
+
+/**
+ * Proporção `value / max` como inteiro de 0 a 100 (arredondado para o mais próximo, meio para cima),
+ * para larguras e alturas de barras. A conta é de BigInt sobre as strings decimais (sem ponto
+ * flutuante, mesmo acima de 2^53). Sem referência (`max` <= 0) ou com valor <= 0 devolve 0; valor
+ * acima de `max` é limitado a 100. Só serve para desenhar: o número exibido é sempre o da API.
+ */
+export function percentOf(value: string, max: string): number {
+  const pv = parse(value);
+  const pm = parse(max);
+  const scale = Math.max(pv.scale, pm.scale);
+  const v = signed(pv, scale);
+  const m = signed(pm, scale);
+  if (m <= 0n || v <= 0n) return 0;
+  if (v >= m) return 100;
+  return Number((v * 200n + m) / (2n * m));
+}
