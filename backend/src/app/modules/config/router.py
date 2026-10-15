@@ -3,9 +3,12 @@ from sqlalchemy.orm import Session
 
 from app.core.audit import Acao, registrar, snapshot
 from app.core.db import get_db
-from app.core.deps import AuthContext, exigir_permissao
+from app.core.deps import AuthContext, autenticado, exigir_permissao
 from app.modules.config.models import ConfiguracaoEmpresa
-from app.modules.config.schemas import ConfiguracaoEditarIn, ConfiguracaoOut, PixOut
+from app.modules.config.schemas import ConfiguracaoEditarIn, ConfiguracaoOut, EmpresaOut, PixOut
+
+# Campos que `null` ou texto vazio apagam; ausente no corpo não mexe.
+CAMPOS_APAGAVEIS = ("cnpj", "telefone", "endereco", "email_contato", "pix_copia_e_cola")
 
 router = APIRouter(prefix="/configuracoes", tags=["configuracoes"])
 
@@ -34,9 +37,10 @@ def editar(
         cfg.taxa_servico_pct = dados.taxa_servico_pct
     if dados.cancelamento_janela_min is not None:
         cfg.cancelamento_janela_min = dados.cancelamento_janela_min
-    if "pix_copia_e_cola" in dados.model_fields_set:
-        # Para onde o dinheiro vai: a mudança sai na auditoria (antes e depois) como as demais.
-        cfg.pix_copia_e_cola = dados.pix_copia_e_cola
+    for campo in CAMPOS_APAGAVEIS:
+        if campo in dados.model_fields_set:
+            # O Pix é para onde o dinheiro vai: a mudança sai na auditoria (antes e depois) como as demais.
+            setattr(cfg, campo, getattr(dados, campo))
     db.flush()
     registrar(
         db,
@@ -59,3 +63,12 @@ def obter_pix(
 ) -> PixOut:
     """Pix da empresa para o fechamento da conta: o caixa monta o QR do valor sem abrir as configurações."""
     return PixOut.model_validate(db.get_one(ConfiguracaoEmpresa, 1))
+
+
+@router.get("/empresa", response_model=EmpresaOut)
+def obter_empresa(
+    db: Session = Depends(get_db),
+    _: AuthContext = Depends(autenticado),
+) -> EmpresaOut:
+    """Dados da empresa para o cabeçalho do recibo: não exige permissão de configurações."""
+    return EmpresaOut.model_validate(db.get_one(ConfiguracaoEmpresa, 1))

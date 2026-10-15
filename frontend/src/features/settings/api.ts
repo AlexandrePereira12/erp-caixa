@@ -4,6 +4,7 @@ import type { ConfiguracaoEditarIn } from "@/lib/api/types";
 
 export const settingsKey = ["configuracoes"] as const;
 export const pixKey = ["configuracoes", "pix"] as const;
+export const empresaKey = ["configuracoes", "empresa"] as const;
 
 export function useSettings() {
   return useQuery({ queryKey: settingsKey, queryFn: ({ signal }) => api.get("/configuracoes", { signal }) });
@@ -14,6 +15,11 @@ export function usePix(options: { enabled?: boolean } = {}) {
   return useQuery({ queryKey: pixKey, queryFn: ({ signal }) => api.get("/configuracoes/pix", { signal }), enabled: options.enabled ?? true });
 }
 
+/** Dados da empresa para o cabeçalho do recibo. Qualquer usuário logado lê (não exige configuracoes.ver). */
+export function useEmpresa() {
+  return useQuery({ queryKey: empresaKey, queryFn: ({ signal }) => api.get("/configuracoes/empresa", { signal }), staleTime: 5 * 60_000 });
+}
+
 export function useUpdateSettings() {
   const client = useQueryClient();
   return useMutation({
@@ -21,6 +27,7 @@ export function useUpdateSettings() {
     onSuccess: (saved) => {
       client.setQueryData(settingsKey, saved);
       void client.invalidateQueries({ queryKey: pixKey });
+      void client.invalidateQueries({ queryKey: empresaKey });
     },
   });
 }

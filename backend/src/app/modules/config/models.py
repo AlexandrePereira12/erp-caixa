@@ -32,6 +32,11 @@ class ConfiguracaoEmpresa(Base):
     cancelamento_janela_min: Mapped[int] = mapped_column(
         SmallInteger, default=5, server_default="5"
     )
+    # Dados da empresa que saem no recibo. Todos opcionais; CNPJ e telefone só com dígitos.
+    cnpj: Mapped[str | None] = mapped_column(String(14))
+    telefone: Mapped[str | None] = mapped_column(String(11))
+    endereco: Mapped[str | None] = mapped_column(String(240))
+    email_contato: Mapped[str | None] = mapped_column(String(120))
     # Pix copia e cola estático da empresa (BR Code). Só o texto: o QR é desenhado no navegador.
     pix_copia_e_cola: Mapped[str | None] = mapped_column(String(1024))
     updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

@@ -556,6 +556,26 @@ export interface paths {
         patch: operations["editar_api_v1_configuracoes_patch"];
         trace?: never;
     };
+    "/api/v1/configuracoes/empresa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Obter Empresa
+         * @description Dados da empresa para o cabeçalho do recibo: não exige permissão de configurações.
+         */
+        get: operations["obter_empresa_api_v1_configuracoes_empresa_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/configuracoes/pix": {
         parameters: {
             query?: never;
@@ -2030,12 +2050,20 @@ export interface components {
         ConfiguracaoEditarIn: {
             /** Cancelamento Janela Min */
             cancelamento_janela_min?: number | null;
+            /** Cnpj */
+            cnpj?: string | null;
+            /** Email Contato */
+            email_contato?: string | null;
+            /** Endereco */
+            endereco?: string | null;
             /** Nome Exibicao */
             nome_exibicao?: string | null;
             /** Pix Copia E Cola */
             pix_copia_e_cola?: string | null;
             /** Taxa Servico Pct */
             taxa_servico_pct?: number | string | null;
+            /** Telefone */
+            telefone?: string | null;
             /** Timezone */
             timezone?: string | null;
         };
@@ -2043,6 +2071,12 @@ export interface components {
         ConfiguracaoOut: {
             /** Cancelamento Janela Min */
             cancelamento_janela_min: number;
+            /** Cnpj */
+            cnpj: string | null;
+            /** Email Contato */
+            email_contato: string | null;
+            /** Endereco */
+            endereco: string | null;
             /** Nome Exibicao */
             nome_exibicao: string;
             /** Pix Copia E Cola */
@@ -2054,6 +2088,8 @@ export interface components {
             readonly pix_recebedor: string | null;
             /** Taxa Servico Pct */
             taxa_servico_pct: string;
+            /** Telefone */
+            telefone: string | null;
             /** Timezone */
             timezone: string;
         };
@@ -2119,6 +2155,23 @@ export interface components {
             pessoas: number;
             /** Total */
             total: string;
+        };
+        /**
+         * EmpresaOut
+         * @description Dados da empresa que saem no recibo. Qualquer usuário logado lê: quem imprime nem sempre vê as
+         *     configurações, e são os mesmos dados que o cliente recebe impressos.
+         */
+        EmpresaOut: {
+            /** Cnpj */
+            cnpj: string | null;
+            /** Email Contato */
+            email_contato: string | null;
+            /** Endereco */
+            endereco: string | null;
+            /** Nome Exibicao */
+            nome_exibicao: string;
+            /** Telefone */
+            telefone: string | null;
         };
         /** EnderecoIn */
         EnderecoIn: {
@@ -6608,6 +6661,71 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ConfiguracaoOut"];
+                };
+            };
+            /** @description Não autenticado ou token inválido. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Sem permissão, conta suspensa ou troca de senha pendente. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Registro não encontrado. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Conflito com o estado atual (regra de negócio). */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+            /** @description Dados inválidos ou regra de negócio violada. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErroOut"];
+                };
+            };
+        };
+    };
+    obter_empresa_api_v1_configuracoes_empresa_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmpresaOut"];
                 };
             };
             /** @description Não autenticado ou token inválido. */

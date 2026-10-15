@@ -8,6 +8,7 @@ import { ArrowLeftIcon } from "@/components/icons";
 import { positiveIntParam } from "@/components/pdv/forms";
 import { PrinterIcon } from "@/components/pdv/icons";
 import { usePrint } from "@/components/pdv/PrintArea";
+import { useEmpresa } from "@/features/settings/api";
 import { ReasonDialog } from "@/components/pdv/ReasonDialog";
 import { ErrorState, LoadingBlock } from "@/components/States";
 import { useToast } from "@/components/Toast";
@@ -34,6 +35,7 @@ export function VendaDetailPage() {
   const caixa = useCaixaAtual({ enabled: can("caixa.operar") });
   const [estornando, setEstornando] = useState(false);
   const { print, printArea } = usePrint();
+  const empresa = useEmpresa();
 
   if (id === undefined) return <ErrorState error={new Error("Venda inválida")} title="Venda não encontrada" />;
   if (query.isLoading) return <LoadingBlock />;
@@ -55,7 +57,7 @@ export function VendaDetailPage() {
               <ArrowLeftIcon width={16} height={16} />
               Vendas
             </Link>
-            <Button className="min-h-11" onClick={print}>
+            <Button className="min-h-11" onClick={print} disabled={empresa.isLoading}>
               <PrinterIcon width={16} height={16} />
               Imprimir recibo
             </Button>
@@ -204,7 +206,7 @@ export function VendaDetailPage() {
           }
         }}
       />
-      {printArea(<VendaReceipt venda={venda} />)}
+      {printArea(<VendaReceipt venda={venda} empresa={empresa.data} />)}
     </div>
   );
 }

@@ -17,28 +17,35 @@ const PRINT_CSS = `
   .print-root table { width: 100%; border-collapse: collapse; }
   .print-root tr { break-inside: avoid; }
 
-  /* Comprovante (recibo e conferência): sem cor, filetes e peso marcam a hierarquia, valores à direita. */
-  .rc { max-width: 80mm; margin: 0 auto; font-family: "Inter Variable", ui-sans-serif, system-ui, Arial, sans-serif; font-size: 12px; line-height: 1.4; font-variant-numeric: tabular-nums; }
-  .rc-title { margin: 0 0 8px; font-size: 1.6em; font-weight: 700; line-height: 1.15; }
-  .rc-stamp { display: inline-block; margin: 0 0 8px; padding: 1px 8px; border: 2px solid #000; border-radius: 3px; font-weight: 700; letter-spacing: 0.08em; }
-  .rc-block { margin: 0; padding: 8px 0; }
-  header .rc-block { padding: 0 0 10px; border-bottom: 1px dashed #000; }
-  .rc-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1em; padding: 1px 0; }
+  /*
+   * Cupom (recibo e conferência), no jeito de impressora térmica: 80 mm, fonte monoespaçada do sistema
+   * (não precisa empacotar fonte), sem cor, filetes tracejados entre os blocos e duplos nas pontas.
+   * O @page acima é o dos relatórios (A4): aqui só a largura da coluna muda.
+   */
+  .rc { max-width: 80mm; margin: 0 auto; font-family: "DejaVu Sans Mono", "Liberation Mono", Consolas, "Courier New", monospace; font-size: 11px; line-height: 1.35; font-variant-numeric: tabular-nums; }
+  .rc p { margin: 0; overflow-wrap: anywhere; }
+  .rc-empresa { text-align: center; }
+  .rc-nome { font-size: 1.2em; font-weight: 700; text-transform: uppercase; }
+  .rc-hr { height: 0; margin: 6px 0; border: 0; border-top: 1px dashed #000; }
+  .rc-hr-duplo { border-top: 3px double #000; }
+  .rc-secao { font-weight: 700; text-transform: uppercase; }
+  .rc-cliente { text-transform: uppercase; }
+  .rc-titulo { margin: 0 0 4px; font-size: 1em; font-weight: 700; text-align: center; text-transform: uppercase; }
+  .rc-stamp { margin: 0 0 4px; padding: 1px 6px; border: 2px solid #000; font-weight: 700; text-align: center; letter-spacing: 0.08em; }
+  .rc-item { padding: 2px 0; break-inside: avoid; }
+  .rc-item-nome { text-transform: uppercase; }
+  .rc-item-calculo { padding-left: 0.5em; }
+  .rc-item-obs { padding-left: 0.5em; font-size: 0.95em; }
+  .rc-block { margin: 0; padding: 2px 0; }
+  .rc-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1em; padding: 1px 0; text-transform: uppercase; }
   .rc-row dt { flex: none; }
   .rc-row dd { margin: 0; min-width: 0; text-align: right; overflow-wrap: anywhere; }
   .rc-row.rc-sub { padding-left: 1.4em; }
   .rc-row.rc-strong { font-weight: 700; }
-  .rc-items { margin-top: 8px; }
-  .rc-items th { padding: 0 0 4px; border-bottom: 1px solid #000; font-weight: 700; text-align: left; }
-  .rc-items td { padding: 5px 0; border-bottom: 1px dotted #000; vertical-align: top; }
-  .rc-items .rc-num { padding-left: 0.8em; text-align: right; white-space: nowrap; }
-  .rc-name { display: block; font-weight: 700; line-height: 1.25; }
-  .rc-unit { display: block; font-size: 0.9em; }
   .rc-totalbox { margin: 0; }
-  .rc-total { display: flex; align-items: baseline; justify-content: space-between; margin: 6px 0 4px; padding: 6px 0; border-top: 2px solid #000; border-bottom: 2px solid #000; font-size: 1.5em; font-weight: 700; }
+  .rc-total { display: flex; align-items: baseline; justify-content: space-between; margin: 4px 0; padding: 4px 0; border-top: 1px dashed #000; border-bottom: 1px dashed #000; font-size: 1.3em; font-weight: 700; }
   .rc-total dd { margin: 0; }
-  .rc-sec { margin: 10px 0 0; font-size: 1em; font-weight: 700; }
-  .rc-foot { margin: 12px 0 0; padding-top: 8px; border-top: 1px dashed #000; font-size: 0.9em; text-align: center; }
+  .rc-foot { text-align: center; }
 }
 `;
 

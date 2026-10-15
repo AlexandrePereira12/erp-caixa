@@ -10,6 +10,7 @@ import { BanIcon, ClockIcon, PencilIcon, PrinterIcon, SplitIcon, SwapIcon, UserI
 import type { Comanda } from "@/components/pdv/types";
 import { comandaLocal, comandaStatusLabel, comandaStatusTone } from "@/components/pdv/labels";
 import { usePrint } from "@/components/pdv/PrintArea";
+import { useEmpresa } from "@/features/settings/api";
 import { ReasonDialog } from "@/components/pdv/ReasonDialog";
 import { useNow } from "@/components/pdv/useNow";
 import { elapsedLabel } from "@/components/pdv/dates";
@@ -43,6 +44,7 @@ export function ComandaPage() {
   const [dialog, setDialog] = useState<DialogKind>(null);
   const [chosenTab, setTab] = useState<Tab | null>(null);
   const { print, printArea } = usePrint();
+  const empresa = useEmpresa();
 
   if (id === undefined) return <ErrorState error={new Error("Comanda inválida")} title="Comanda não encontrada" />;
   if (query.isLoading) return <LoadingBlock label="Carregando comanda…" />;
@@ -97,6 +99,7 @@ export function ComandaPage() {
         canCancel={emAndamento && can("comandas.cancelar")}
         onOpen={setDialog}
         onPrint={print}
+        printDisabled={empresa.isLoading}
       />
 
       {!emAndamento && (
@@ -196,7 +199,7 @@ export function ComandaPage() {
         onClose={() => setDialog(null)}
         onSubmit={(motivo) => actions.cancel.mutateAsync(motivo)}
       />
-      {printArea(<ComandaReceipt comanda={comanda} />)}
+      {printArea(<ComandaReceipt comanda={comanda} empresa={empresa.data} />)}
     </div>
   );
 }
@@ -209,6 +212,7 @@ function Header({
   canCancel,
   onOpen,
   onPrint,
+  printDisabled,
 }: {
   comanda: Comanda;
   now: number;
@@ -217,6 +221,7 @@ function Header({
   canCancel: boolean;
   onOpen: (dialog: DialogKind) => void;
   onPrint: () => void;
+  printDisabled: boolean;
 }) {
   const { can } = usePermissions();
   const cliente = comanda.cliente?.nome ?? comanda.nome_cliente;
@@ -285,7 +290,7 @@ function Header({
             Dividir conta
           </Button>
         )}
-        <Button className="min-h-11" onClick={onPrint}>
+        <Button className="min-h-11" onClick={onPrint} disabled={printDisabled}>
           <PrinterIcon width={16} height={16} />
           Imprimir resumo
         </Button>

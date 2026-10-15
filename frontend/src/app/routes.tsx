@@ -13,6 +13,7 @@ import { RequireAuth, RequirePermission } from "@/features/auth/guards";
 import { RolesPage } from "@/features/roles/RolesPage";
 import { SettingsPage } from "@/features/settings/SettingsPage";
 import { UsersPage } from "@/features/users/UsersPage";
+import { Credits } from "@/routes/Credits";
 import { ErrorPage } from "@/routes/ErrorPage";
 import { Home } from "@/routes/Home";
 import { NotFound } from "@/routes/NotFound";
@@ -26,6 +27,7 @@ export const routes: RouteObject[] = [
     children: [
       { path: "/login", element: <LoginPage /> },
       { path: "/acesso-suspenso", element: <Suspended /> },
+      { path: "/creditos", element: <Credits /> },
       {
         element: <RequireAuth />,
         children: [

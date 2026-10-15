@@ -18,3 +18,4 @@ export type AuditoriaOut = Schemas["AuditoriaOut"];
 export type AuditoriaPage = Schemas["Page_AuditoriaOut_"];
 export type ConfiguracaoOut = Schemas["ConfiguracaoOut"];
 export type ConfiguracaoEditarIn = Schemas["ConfiguracaoEditarIn"];
+export type Empresa = Schemas["EmpresaOut"];

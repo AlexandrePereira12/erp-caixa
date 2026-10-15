@@ -51,3 +51,9 @@ export function documentLengthError(value: string, tipo: "F" | "J"): string | nu
   if (tipo === "J" && digits.length !== 14) return "O CNPJ deve ter 14 dígitos.";
   return null;
 }
+
+/** Telefone com DDD: 10 dígitos "(85) 3333-4444", 11 "(85) 99999-4444". O backend guarda só os dígitos. */
+export function maskPhone(value: string): string {
+  const digits = onlyDigits(value).slice(0, 11);
+  return applyPattern(digits, digits.length > 10 ? "(00) 00000-0000" : "(00) 0000-0000");
+}

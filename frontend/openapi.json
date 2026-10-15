@@ -1597,6 +1597,42 @@
             ],
             "title": "Cancelamento Janela Min"
           },
+          "cnpj": {
+            "anyOf": [
+              {
+                "maxLength": 30,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cnpj"
+          },
+          "email_contato": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Contato"
+          },
+          "endereco": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endereco"
+          },
           "nome_exibicao": {
             "anyOf": [
               {
@@ -1638,6 +1674,18 @@
             ],
             "title": "Taxa Servico Pct"
           },
+          "telefone": {
+            "anyOf": [
+              {
+                "maxLength": 30,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telefone"
+          },
           "timezone": {
             "anyOf": [
               {
@@ -1659,6 +1707,39 @@
           "cancelamento_janela_min": {
             "title": "Cancelamento Janela Min",
             "type": "integer"
+          },
+          "cnpj": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cnpj"
+          },
+          "email_contato": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Contato"
+          },
+          "endereco": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endereco"
           },
           "nome_exibicao": {
             "title": "Nome Exibicao",
@@ -1692,6 +1773,17 @@
             "title": "Taxa Servico Pct",
             "type": "string"
           },
+          "telefone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telefone"
+          },
           "timezone": {
             "title": "Timezone",
             "type": "string"
@@ -1702,6 +1794,10 @@
           "timezone",
           "taxa_servico_pct",
           "cancelamento_janela_min",
+          "cnpj",
+          "telefone",
+          "endereco",
+          "email_contato",
           "pix_copia_e_cola",
           "pix_recebedor"
         ],
@@ -1886,6 +1982,68 @@
           "partes"
         ],
         "title": "DivisaoOut",
+        "type": "object"
+      },
+      "EmpresaOut": {
+        "description": "Dados da empresa que saem no recibo. Qualquer usuário logado lê: quem imprime nem sempre vê as\nconfigurações, e são os mesmos dados que o cliente recebe impressos.",
+        "properties": {
+          "cnpj": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cnpj"
+          },
+          "email_contato": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email Contato"
+          },
+          "endereco": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endereco"
+          },
+          "nome_exibicao": {
+            "title": "Nome Exibicao",
+            "type": "string"
+          },
+          "telefone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telefone"
+          }
+        },
+        "required": [
+          "nome_exibicao",
+          "cnpj",
+          "telefone",
+          "endereco",
+          "email_contato"
+        ],
+        "title": "EmpresaOut",
         "type": "object"
       },
       "EnderecoIn": {
@@ -11541,6 +11699,83 @@
           }
         ],
         "summary": "Editar",
+        "tags": [
+          "configuracoes"
+        ]
+      }
+    },
+    "/api/v1/configuracoes/empresa": {
+      "get": {
+        "description": "Dados da empresa para o cabeçalho do recibo: não exige permissão de configurações.",
+        "operationId": "obter_empresa_api_v1_configuracoes_empresa_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmpresaOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Não autenticado ou token inválido."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Sem permissão, conta suspensa ou troca de senha pendente."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Registro não encontrado."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Conflito com o estado atual (regra de negócio)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroOut"
+                }
+              }
+            },
+            "description": "Dados inválidos ou regra de negócio violada."
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Obter Empresa",
         "tags": [
           "configuracoes"
         ]

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { documentLengthError, formatDocument, maskCep, maskCnpj, maskCpf, maskDocument } from "./masks";
+import { documentLengthError, formatDocument, maskCep, maskCnpj, maskCpf, maskDocument, maskPhone } from "./masks";
 
 describe("máscaras", () => {
   it("CPF e CNPJ progressivos, sem separador sobrando", () => {
@@ -25,5 +25,17 @@ describe("máscaras", () => {
     expect(documentLengthError("11.222.333/0001", "J")).toBe("O CNPJ deve ter 14 dígitos.");
     expect(documentLengthError("", "J")).toBeNull();
     expect(documentLengthError("529.982.247-25", "F")).toBeNull();
+  });
+});
+
+describe("maskPhone", () => {
+  it("aplica (DD) 0000-0000 até 10 dígitos e (DD) 00000-0000 com 11, sem separador sobrando", () => {
+    expect(maskPhone("")).toBe("");
+    expect(maskPhone("8")).toBe("(8");
+    expect(maskPhone("85")).toBe("(85");
+    expect(maskPhone("853")).toBe("(85) 3");
+    expect(maskPhone("8533334444")).toBe("(85) 3333-4444");
+    expect(maskPhone("85999994444")).toBe("(85) 99999-4444");
+    expect(maskPhone("(85) 99999-4444 999")).toBe("(85) 99999-4444");
   });
 });

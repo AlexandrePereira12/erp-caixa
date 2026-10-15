@@ -16,7 +16,7 @@ import { LoadingBlock } from "@/components/States";
 import { useCaixaAtual } from "@/features/caixa/api";
 import { useSaldoAberto } from "@/features/financeiro/api";
 import { useFormas } from "@/features/formas-pagamento/api";
-import { usePix } from "@/features/settings/api";
+import { useEmpresa, usePix } from "@/features/settings/api";
 import { VendaReceipt } from "@/features/vendas/VendaReceipt";
 import { ApiError, errorMessage } from "@/lib/api/errors";
 import { usePermissions } from "@/lib/auth/hooks";
@@ -60,6 +60,8 @@ export function FecharContaDialog({ comanda, onClose }: FecharContaDialogProps) 
   const [justificativa, setJustificativa] = useState("");
   const [venda, setVenda] = useState<Venda | null>(null);
   const { print, printArea } = usePrint();
+  // Dados da empresa para o cabeçalho do recibo: o botão Imprimir só libera depois da consulta (a impressão abre na hora).
+  const empresa = useEmpresa();
 
   const checks = useMemo(() => checkLinhas(linhas, formas), [linhas, formas]);
   const previa = useMemo(() => calcularPrevia(total, checks), [total, checks]);
@@ -116,7 +118,7 @@ export function FecharContaDialog({ comanda, onClose }: FecharContaDialogProps) 
         title={`Venda #${venda.id} concluída`}
         footer={
           <>
-            <Button className="min-h-11" onClick={print}>
+            <Button className="min-h-11" onClick={print} disabled={empresa.isLoading}>
               <PrinterIcon width={16} height={16} />
               Imprimir recibo
             </Button>
@@ -132,7 +134,7 @@ export function FecharContaDialog({ comanda, onClose }: FecharContaDialogProps) 
         }
       >
         <SaleSuccess venda={venda} />
-        {printArea(<VendaReceipt venda={venda} />)}
+        {printArea(<VendaReceipt venda={venda} empresa={empresa.data} />)}
       </Dialog>
     );
   }
@@ -320,7 +322,6 @@ function FiadoHint({ cliente, saldo, loading }: { cliente: ClientValue; saldo: R
   const aceita = saldo ? saldo.aceita_fiado : cliente.cliente?.aceita_fiado;
   return (
     <div className="space-y-1 text-sm">
-      {aceita === false && <Alert tone="warning">{cliente.nome} não está habilitado para fiado. O backend vai recusar; habilite no cadastro do cliente (o cadastro rápido não habilita).</Alert>}
       {saldo && aceita !== false && (
         <p className="text-muted">
           Em aberto: <strong className="text-fg">{formatMoney(saldo.saldo_aberto)}</strong> ·{" "}

@@ -176,7 +176,6 @@ function QuickRegister({ initialName, onCancel, onCreated }: { initialName: stri
       <p className="text-sm font-medium text-fg">Cadastro rápido</p>
       <Input aria-label="Nome do novo cliente" placeholder="Nome" className="min-h-11" value={nome} onChange={(e) => setNome(e.target.value)} autoComplete="off" />
       <Input aria-label="Telefone do novo cliente" placeholder="Telefone" type="tel" inputMode="tel" className="min-h-11" value={telefone} onChange={(e) => setTelefone(e.target.value)} autoComplete="off" />
-      <p className="text-xs text-muted">O cadastro rápido não habilita o cliente para fiado; isso é definido no cadastro completo.</p>
       {localError && <Alert tone="danger">{localError}</Alert>}
       <div className="flex gap-2">
         <Button variant="primary" className="min-h-11" loading={create.isPending} onClick={() => void submit()}>

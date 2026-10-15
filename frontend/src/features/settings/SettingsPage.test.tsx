@@ -213,3 +213,65 @@ describe("SettingsPage: Pix copia e cola", () => {
     expect(screen.queryByRole("img", { name: "QR Code do Pix da empresa" })).toBeNull();
   });
 });
+
+describe("SettingsPage: dados da empresa", () => {
+  const VAZIO = { ...CFG, nome_exibicao: "Zé", cnpj: null, telefone: null, endereco: null, email_contato: null, pix_copia_e_cola: null, pix_recebedor: null };
+
+  it("mostra os dados salvos com máscara", async () => {
+    const mock = mockApi();
+    signIn();
+    mock.on("GET /api/v1/configuracoes", json(200, { ...VAZIO, cnpj: "11222333000181", telefone: "85999994444", endereco: "Rua A, 10", email_contato: "a@b.com" }));
+    renderApp("/configuracoes");
+
+    expect(((await screen.findByLabelText("CNPJ")) as HTMLInputElement).value).toBe("11.222.333/0001-81");
+    expect((screen.getByLabelText("Telefone") as HTMLInputElement).value).toBe("(85) 99999-4444");
+    expect((screen.getByLabelText("Endereço") as HTMLInputElement).value).toBe("Rua A, 10");
+    expect((screen.getByLabelText("E-mail de contato") as HTMLInputElement).value).toBe("a@b.com");
+  });
+
+  it("digita com máscara e envia só os dígitos; só o que mudou", async () => {
+    const mock = mockApi();
+    signIn();
+    mock.on("GET /api/v1/configuracoes", json(200, VAZIO));
+    mock.on("PATCH /api/v1/configuracoes", json(200, { ...VAZIO, cnpj: "11222333000181", telefone: "8533334444", endereco: "Rua das Oliveiras, 1234", email_contato: "contato@zerestaurante.com.br" }));
+    const { user } = renderApp("/configuracoes");
+
+    await user.type(await screen.findByLabelText("CNPJ"), "11222333000181");
+    expect((screen.getByLabelText("CNPJ") as HTMLInputElement).value).toBe("11.222.333/0001-81");
+    await user.type(screen.getByLabelText("Telefone"), "8533334444");
+    expect((screen.getByLabelText("Telefone") as HTMLInputElement).value).toBe("(85) 3333-4444");
+    await user.type(screen.getByLabelText("Endereço"), "Rua das Oliveiras, 1234");
+    await user.type(screen.getByLabelText("E-mail de contato"), "contato@zerestaurante.com.br");
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    await waitFor(() => expect(mock.callsTo("PATCH /api/v1/configuracoes")).toHaveLength(1));
+    expect(mock.callsTo("PATCH /api/v1/configuracoes")[0]!.body).toEqual({ cnpj: "11222333000181", telefone: "8533334444", endereco: "Rua das Oliveiras, 1234", email_contato: "contato@zerestaurante.com.br" });
+  });
+
+  it("a máscara não conta como mudança e esvaziar o campo envia null", async () => {
+    const mock = mockApi();
+    signIn();
+    mock.on("GET /api/v1/configuracoes", json(200, { ...VAZIO, cnpj: "11222333000181", telefone: "8533334444" }));
+    mock.on("PATCH /api/v1/configuracoes", json(200, { ...VAZIO, cnpj: "11222333000181", telefone: null }));
+    const { user } = renderApp("/configuracoes");
+
+    await user.clear(await screen.findByLabelText("Telefone"));
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    await waitFor(() => expect(mock.callsTo("PATCH /api/v1/configuracoes")[0]!.body).toEqual({ telefone: null }));
+  });
+
+  it("CNPJ recusado pelo backend aparece no campo", async () => {
+    const mock = mockApi();
+    signIn();
+    mock.on("GET /api/v1/configuracoes", json(200, VAZIO));
+    mock.on("PATCH /api/v1/configuracoes", apiError(422, "validacao", "Dados inválidos.", [{ campo: "body.cnpj", mensagem: "CNPJ inválido: confira os 14 dígitos." }]));
+    const { user } = renderApp("/configuracoes");
+
+    await user.type(await screen.findByLabelText("CNPJ"), "11222333000182");
+    await user.click(screen.getByRole("button", { name: "Salvar" }));
+
+    expect(await screen.findByText("CNPJ inválido: confira os 14 dígitos.")).toBeTruthy();
+    expect(screen.getByLabelText("CNPJ").getAttribute("aria-invalid")).toBe("true");
+  });
+});

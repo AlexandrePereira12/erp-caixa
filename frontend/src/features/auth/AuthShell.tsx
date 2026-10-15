@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { BrandMark } from "@/components/BrandMark";
+import { Footer } from "@/components/Footer";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 /**
@@ -22,18 +23,21 @@ export function AuthShell({ title, description, art, children }: { title: string
         <p className="max-w-[26rem] text-[2rem] font-semibold leading-tight tracking-[-0.01em]">Gestão de salão, comandas e caixa para restaurantes.</p>
       </aside>
 
-      <main className="relative flex flex-col items-center justify-center gap-6 bg-page px-5 py-12">
-        <ThemeToggle className="absolute right-4 top-4" />
-        <div className="flex items-center gap-3 text-fg lg:hidden">
-          <BrandMark size={36} />
-          <span className="text-lg font-semibold">ERP Restaurante</span>
-        </div>
-        <div className="w-full max-w-[26.25rem] rounded-2xl border border-line bg-surface p-6 sm:p-8">
-          <h1 className="text-2xl font-bold leading-tight text-fg">{title}</h1>
-          {description && <p className="mt-1.5 text-muted">{description}</p>}
-          <div className="mt-5">{children}</div>
-        </div>
-      </main>
+      <div className="flex min-h-dvh flex-col bg-page">
+        <main className="relative flex flex-1 flex-col items-center justify-center gap-6 px-5 py-12">
+          <ThemeToggle className="absolute right-4 top-4" />
+          <div className="flex items-center gap-3 text-fg lg:hidden">
+            <BrandMark size={36} />
+            <span className="text-lg font-semibold">ERP Restaurante</span>
+          </div>
+          <div className="w-full max-w-[26.25rem] rounded-2xl border border-line bg-surface p-6 sm:p-8">
+            <h1 className="text-2xl font-bold leading-tight text-fg">{title}</h1>
+            {description && <p className="mt-1.5 text-muted">{description}</p>}
+            <div className="mt-5">{children}</div>
+          </div>
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }

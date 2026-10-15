@@ -5,6 +5,7 @@ import { useNavOpen } from "./useNavOpen";
 import { BrandMark } from "@/components/BrandMark";
 import { Button } from "@/components/Button";
 import { Drawer } from "@/components/Drawer";
+import { Footer } from "@/components/Footer";
 import { ChevronRightIcon, MenuIcon } from "@/components/icons";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { logout } from "@/lib/auth/auth";
@@ -162,6 +163,7 @@ export function AppLayout() {
             <Outlet />
           </div>
         </main>
+        <Footer />
       </div>
     </div>
   );

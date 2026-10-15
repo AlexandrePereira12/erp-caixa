@@ -2,7 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import type { UserEvent } from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { session } from "@/lib/auth/session";
-import { json, mockApi } from "@/test/mockFetch";
+import { deferred, json, mockApi } from "@/test/mockFetch";
 import { renderApp } from "@/test/render";
 import { businessError, caixa, comanda, FORMAS, item, pageOf, pessoa, produto, signInAs, totais, venda } from "./fixtures";
 
@@ -202,7 +202,7 @@ describe("Fechar conta", () => {
     expect(alert.textContent).toContain("outra forma de pagamento");
   });
 
-  it("cadastro rápido de cliente só aparece com pessoas.cadastro_rapido e avisa que não habilita fiado", async () => {
+  it("cadastro rápido de cliente só aparece com pessoas.cadastro_rapido", async () => {
     const mock = setup("gerente");
     mock.on("POST /api/v1/pessoas/rapido", json(201, pessoa({ id: 21, nome: "Maria", cliente: { aceita_fiado: false, limite_fiado: "0.00" } })));
     mock.on("GET /api/v1/pessoas/21/saldo-aberto", json(200, { ...SALDO, pessoa_id: 21, aceita_fiado: false, limite_fiado: "0.00", limite_disponivel: null }));
@@ -211,13 +211,14 @@ describe("Fechar conta", () => {
     await user.click(await within(dialog).findByRole("button", { name: "Pagar tudo em Fiado" }));
 
     await user.click(within(dialog).getByRole("button", { name: "Cadastro rápido de cliente" }));
-    expect(within(dialog).getByText(/não habilita o cliente para fiado/)).toBeTruthy();
+    expect(within(dialog).queryByText(/não habilita o cliente para fiado/)).toBeNull();
     await user.type(within(dialog).getByLabelText("Nome do novo cliente"), "Maria");
     await user.type(within(dialog).getByLabelText("Telefone do novo cliente"), "11988887777");
     await user.click(within(dialog).getByRole("button", { name: "Cadastrar" }));
 
     await waitFor(() => expect(mock.callsTo("POST /api/v1/pessoas/rapido")[0]?.body).toEqual({ nome: "Maria", telefone: "11988887777" }));
-    expect(await within(dialog).findByText(/Maria não está habilitado para fiado/)).toBeTruthy();
+    await waitFor(() => expect(mock.callsTo("GET /api/v1/pessoas/21/saldo-aberto").length).toBeGreaterThan(0));
+    expect(within(dialog).queryByText(/habilitado para fiado/)).toBeNull();
   });
 
   it("sem pessoas.cadastro_rapido não há cadastro rápido", async () => {
@@ -405,5 +406,47 @@ describe("Fechar conta: QR Code do Pix", () => {
     expect(within(dialog).queryByRole("img", { name: /QR Code do Pix/ })).toBeNull();
     expect(within(dialog).queryByText(/Nenhum Pix cadastrado/)).toBeNull();
     expect(confirm(dialog).disabled).toBe(false);
+  });
+});
+
+describe("Fechar conta: cabeçalho do recibo", () => {
+  it("o botão Imprimir espera os dados da empresa e o cupom sai com o cabeçalho", async () => {
+    const mock = setup("frente");
+    mock.on("POST /api/v1/comandas/12/fechar", json(201, venda()));
+    const espera = deferred<Response>();
+    mock.on("GET /api/v1/configuracoes/empresa", () => espera.promise);
+    const print = vi.spyOn(window, "print").mockImplementation(() => {});
+    const { user } = renderApp("/comandas/12");
+    const dialog = await openDialog(user);
+    await user.click(await within(dialog).findByRole("button", { name: "Pagar tudo em Dinheiro" }));
+    await user.click(confirm(dialog));
+
+    const done = await screen.findByRole("dialog", { name: "Venda #31 concluída" });
+    expect((within(done).getByRole("button", { name: "Imprimir recibo" }) as HTMLButtonElement).disabled).toBe(true);
+
+    espera.resolve(json(200, { nome_exibicao: "Restaurante do Zé", cnpj: "11222333000181", telefone: null, endereco: null, email_contato: null }));
+    await waitFor(() => expect((within(done).getByRole("button", { name: "Imprimir recibo" }) as HTMLButtonElement).disabled).toBe(false));
+    await user.click(within(done).getByRole("button", { name: "Imprimir recibo" }));
+    await waitFor(() => expect(print).toHaveBeenCalledTimes(1));
+    const cupom = within(screen.getByTestId("print-root"));
+    expect(cupom.getByText("Restaurante do Zé")).toBeTruthy();
+    expect(cupom.getByText("CNPJ 11.222.333/0001-81")).toBeTruthy();
+  });
+
+  it("se a consulta da empresa falhar, o botão libera e o cupom sai sem cabeçalho", async () => {
+    const mock = setup("frente");
+    mock.on("POST /api/v1/comandas/12/fechar", json(201, venda()));
+    mock.on("GET /api/v1/configuracoes/empresa", json(500, { erro: { codigo: "erro_interno", mensagem: "Falhou." } }));
+    const print = vi.spyOn(window, "print").mockImplementation(() => {});
+    const { user } = renderApp("/comandas/12");
+    const dialog = await openDialog(user);
+    await user.click(await within(dialog).findByRole("button", { name: "Pagar tudo em Dinheiro" }));
+    await user.click(confirm(dialog));
+
+    const done = await screen.findByRole("dialog", { name: "Venda #31 concluída" });
+    await waitFor(() => expect((within(done).getByRole("button", { name: "Imprimir recibo" }) as HTMLButtonElement).disabled).toBe(false));
+    await user.click(within(done).getByRole("button", { name: "Imprimir recibo" }));
+    await waitFor(() => expect(print).toHaveBeenCalledTimes(1));
+    expect(within(screen.getByTestId("print-root")).getByText("Recibo de venda #31")).toBeTruthy();
   });
 });

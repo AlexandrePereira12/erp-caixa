@@ -7,7 +7,7 @@
 
 O sistema segue o sistema de design da RastroSystem, como desenhado no projeto "ERP Restaurante redesenhado"
 (Claude Design): **teal** como cor de ação (`#00797c` no claro, `#26c5c7` no escuro), neutros frios, **Inter** em
-todo o texto (inclusive valores grandes e recibo), lateral grafite (`#1b1d1f`) nos dois temas, cartões planos
+todo o texto da tela (o recibo impresso é cupom monoespaçado: ver 0009), lateral grafite (`#1b1d1f`) nos dois temas, cartões planos
 separados por filete (sem sombra), cantos de 4 a 12 px e selos retangulares de 4 px. Cada situação tem um tom
 próprio (verde livre/fechada/paga, azul aberta/ocupada, âmbar a vencer/conta pedida, vermelho vencida/erro,
 cinza neutro).
@@ -16,6 +16,9 @@ Marca provisória: um "R" sobre quadrado teal, com o nome **ERP Restaurante** (a
 Entrada em duas colunas (painel grafite com a frase do sistema e o formulário num cartão; só a tela de login
 traz no painel uma ilustração do próprio sistema, em SVG, `features/auth/LoginArt.tsx`), página inicial em
 atalhos com a inicial de cada tela, salão em cartões de mesa com selo de situação e legenda.
+
+Rodapé em todas as telas (`components/Footer.tsx`), no estilo do CineLocal (`site-filme`): nome do sistema e frase, direitos
+reservados com o ano corrente e link para `/creditos`, página pública com autoria e licenças de terceiros.
 
 Menu lateral em **módulos e submódulos** (Atendimento, Vendas, Financeiro, Estoque, Cadastros, Relatórios,
 Administração), definidos em `app/navigation.ts`; o mesmo mapa alimenta o menu, a gaveta do celular e os atalhos
@@ -41,7 +44,7 @@ sistema**, com alternância manual no topo.
   borda do desenho (`#c3c8d0`) tem ~1,7:1 contra o fundo; num campo ela é a única pista de onde clicar, então
   precisa de 3:1 (WCAG 1.4.11). Botões e cartões usam a borda do desenho.
 - **Conteúdo com largura máxima de 90 rem**, centralizado: o desenho não define o comportamento em tela larga.
-- **Recibo e folha de relatório em Inter**, preto no branco: sai igual ao desenho, sem a máquina de escrever.
+- **Folha de relatório em Inter**, preto no branco. O recibo e a conferência da comanda seguem o formato de cupom térmico, em fonte monoespaçada (0009).
 
 ## Restrições que não são óbvias
 
@@ -68,6 +71,6 @@ sistema**, com alternância manual no topo.
   mudou junto com a paleta e precisa mudar de novo se a paleta mudar.
 - **Rótulo repetido, nome acessível próprio.** "Vendas" existe em Vendas e em Relatórios; os links de relatório
   levam `aria-label` ("Relatório de vendas") para não haver dois links com o mesmo nome.
-- **Impressão** sai preto no branco por regra (`PRINT_CSS` zera cores e fundos): a hierarquia do recibo vem de
-  peso, tamanho, filetes (tracejado, pontilhado, duplo) e do título. Estrutura em `receipt.tsx`, estilo em
+- **Impressão** sai preto no branco por regra (`PRINT_CSS` zera cores e fundos): a hierarquia do cupom vem de
+  peso, tamanho e filetes (tracejado, duplo). O `@page` é o dos relatórios (A4) e não muda por causa do cupom. Estrutura em `receipt.tsx`, estilo em
   `PRINT_CSS` sob `.rc`.
